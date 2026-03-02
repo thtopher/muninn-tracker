@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ODIN / Muninn — 30-Week Tracker</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface-2: #1a2236;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --p0: #6366f1;
+    --p1: #3b82f6;
+    --p1-glow: rgba(59, 130, 246, 0.2);
+    --p2: #8b5cf6;
+    --p3: #06b6d4;
+    --p4: #10b981;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --orange: #f97316;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header { padding: 48px 0 32px; border-bottom: 1px solid var(--border); }
+
+  .header-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap;
+  }
+
+  .logo { display: flex; align-items: center; gap: 16px; }
+
+  .logo-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--p1), var(--p2));
+    border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+  }
+
+  .logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo h1 span { color: var(--text-muted); font-weight: 400; }
+
+  .header-meta { text-align: right; color: var(--text-dim); font-size: 14px; }
+  .header-meta strong { color: var(--text); }
+
+  .header-actions { display: flex; align-items: center; gap: 12px; margin-top: 8px; justify-content: flex-end; }
+
+  .btn-small {
+    padding: 4px 12px; border: 1px solid var(--border); background: transparent;
+    color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 12px;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .btn-small:hover { border-color: var(--text-muted); color: var(--text); }
+  .btn-small.danger:hover { border-color: var(--red); color: var(--red); }
+
+  .save-indicator {
+    font-size: 12px; color: var(--green); opacity: 0; transition: opacity 0.3s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  .vision {
+    margin-top: 20px; padding: 16px 20px;
+    background: var(--surface); border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0; color: var(--text-dim); font-size: 15px; line-height: 1.7;
+  }
+
+  /* Progress bar */
+  .progress-section { padding: 32px 0; border-bottom: 1px solid var(--border); }
+
+  .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .progress-header h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+  .progress-header span { font-size: 14px; color: var(--text-dim); }
+  .progress-header span strong { color: var(--accent); font-size: 18px; }
+
+  .progress-track { height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+
+  .progress-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--p0), var(--p1), var(--p2), var(--p3), var(--p4));
+    transition: width 0.8s ease;
+  }
+
+  .progress-phases { display: flex; margin-top: 8px; position: relative; height: 24px; }
+
+  .progress-phase-label {
+    font-size: 11px; color: var(--text-muted); position: absolute;
+    transform: translateX(-50%); white-space: nowrap;
+  }
+
+  /* Phase nav */
+  .phase-nav { display: flex; gap: 4px; padding: 24px 0 0; flex-wrap: wrap; }
+
+  .phase-btn {
+    padding: 8px 20px; border: 1px solid var(--border); background: transparent;
+    color: var(--text-dim); border-radius: 8px; cursor: pointer; font-size: 14px;
+    font-family: inherit; transition: all 0.2s; white-space: nowrap;
+  }
+  .phase-btn:hover { border-color: var(--text-muted); color: var(--text); }
+  .phase-btn.active { background: var(--surface-2); border-color: var(--accent); color: var(--text); }
+  .phase-btn .phase-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    margin-right: 6px; vertical-align: middle;
+  }
+
+  /* Phase sections */
+  .phase-section { padding: 32px 0; display: none; }
+  .phase-section.active { display: block; }
+
+  .phase-header { margin-bottom: 24px; }
+  .phase-header h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+
+  .phase-badge {
+    font-size: 12px; padding: 3px 10px; border-radius: 12px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .phase-header .phase-narrative { color: var(--text-dim); font-size: 15px; line-height: 1.7; max-width: 800px; }
+
+  .stage-label {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-muted); margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+
+  /* Week cards */
+  .week-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 12px; overflow: hidden; transition: border-color 0.2s;
+  }
+  .week-card:hover { border-color: var(--text-muted); }
+
+  .week-card.current {
+    border-color: var(--accent);
+    box-shadow: 0 0 24px var(--accent-glow), inset 0 0 0 1px rgba(59, 130, 246, 0.1);
+  }
+
+  .week-card.completed { opacity: 0.7; }
+  .week-card.completed:hover { opacity: 1; }
+
+  .week-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; cursor: pointer; user-select: none;
+  }
+
+  .week-card-left { display: flex; align-items: center; gap: 16px; flex: 1; }
+
+  .week-num { font-size: 13px; font-weight: 700; color: var(--text-muted); min-width: 44px; font-variant-numeric: tabular-nums; }
+  .week-date { font-size: 12px; color: var(--text-muted); min-width: 60px; }
+  .week-focus { font-size: 15px; font-weight: 500; color: var(--text); flex: 1; }
+
+  .week-status { display: flex; align-items: center; gap: 8px; }
+
+  .status-pill {
+    font-size: 11px; padding: 3px 10px; border-radius: 10px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .status-done { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+  .status-active { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+  .status-upcoming { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+
+  .current-badge {
+    font-size: 11px; padding: 3px 10px; border-radius: 10px; font-weight: 600;
+    background: var(--accent); color: white; animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+  .chevron { color: var(--text-muted); transition: transform 0.2s; font-size: 18px; margin-left: 12px; }
+  .week-card.open .chevron { transform: rotate(90deg); }
+
+  .week-card-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); }
+  .week-card.open .week-card-body { display: block; }
+
+  .week-toolbar {
+    display: flex; justify-content: flex-end; padding: 12px 0 4px; gap: 8px;
+  }
+
+  .btn-export {
+    padding: 4px 12px; border: 1px solid var(--border); background: transparent;
+    color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 12px;
+    font-family: inherit; transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+  }
+  .btn-export:hover { border-color: var(--accent); color: var(--accent); }
+
+  .week-tasks { padding: 12px 0; }
+  .week-tasks ul { list-style: none; padding: 0; }
+
+  .week-tasks li {
+    padding: 4px 0 4px 20px; position: relative; color: var(--text-dim);
+    font-size: 14px; line-height: 1.6;
+  }
+
+  .week-tasks li::before {
+    content: ''; position: absolute; left: 0; top: 12px;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted);
+  }
+
+  /* Editable fields */
+  [contenteditable] {
+    border-radius: 4px; transition: background 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  [contenteditable]:hover {
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  [contenteditable]:focus {
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.3);
+  }
+
+  .edit-hint {
+    font-size: 11px; color: var(--text-muted); opacity: 0;
+    transition: opacity 0.2s; margin-left: 8px; font-style: italic;
+  }
+  [contenteditable]:focus ~ .edit-hint,
+  [contenteditable]:hover ~ .edit-hint { opacity: 1; }
+
+  /* Gate section */
+  .gate-section { padding: 20px; background: var(--surface-2); border-radius: 8px; margin-top: 4px; }
+
+  .gate-section h4 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .gate-section h4 .gate-icon { font-size: 16px; }
+
+  .gate-milestone { font-size: 15px; color: var(--text); font-weight: 500; margin-bottom: 12px; line-height: 1.6; padding: 4px; }
+  .gate-why { font-size: 14px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.7; font-style: italic; padding: 4px; }
+
+  .gate-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .gate-bar { padding: 12px 16px; border-radius: 8px; font-size: 13px; line-height: 1.6; }
+  .gate-bar.minimum { background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.2); }
+  .gate-bar.target { background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.2); }
+
+  .gate-bar-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
+  .gate-bar.minimum .gate-bar-label { color: var(--yellow); }
+  .gate-bar.target .gate-bar-label { color: var(--green); }
+  .gate-bar p { color: var(--text-dim); padding: 2px; }
+
+  .gate-simple {
+    font-size: 14px; color: var(--text-dim); padding: 12px 16px;
+    background: rgba(34, 197, 94, 0.08); border: 1px solid rgba(34, 197, 94, 0.15);
+    border-radius: 8px; line-height: 1.6;
+  }
+
+  /* Phase gates & risks */
+  .gates-section, .risks-section { padding: 32px 0; display: none; }
+  .gates-section.active, .risks-section.active { display: block; }
+
+  .gate-card {
+    display: flex; align-items: stretch; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+  }
+  .gate-card-accent { width: 4px; flex-shrink: 0; }
+  .gate-card-body { padding: 20px 24px; flex: 1; }
+  .gate-card-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .gate-card-title { font-weight: 600; font-size: 16px; }
+  .gate-card-week { font-size: 13px; color: var(--text-muted); }
+  .gate-card-condition { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+  .risk-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px; margin-bottom: 12px;
+  }
+  .risk-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .risk-impact { font-size: 13px; color: var(--orange); margin-bottom: 6px; }
+  .risk-mitigation { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+
+  footer { padding: 32px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 13px; }
+
+  @media (max-width: 768px) {
+    .header-top { flex-direction: column; }
+    .header-meta { text-align: left; }
+    .gate-bars { grid-template-columns: 1fr; }
+    .week-card-left { gap: 10px; }
+    .week-date { display: none; }
+    .phase-nav { gap: 6px; }
+    .phase-btn { padding: 6px 14px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">&#x1D245;</div>
+        <h1>Muninn <span>/ ODIN Tracker</span></h1>
+      </div>
+      <div class="header-meta">
+        <div>Target: <strong>August 24, 2026</strong></div>
+        <div>Week 5 of 30 &middot; P1 Active</div>
+        <div>Updated March 2, 2026</div>
+        <div class="header-actions">
+          <span class="save-indicator" id="saveIndicator">&#10003; Saved</span>
+          <button class="btn-small danger" onclick="resetAll()">Reset All Edits</button>
+        </div>
+      </div>
+    </div>
+    <div class="vision">
+      <strong>The vision:</strong> ODIN answers analytical questions in natural language against Starset's BigQuery data — so instead of someone writing SQL manually, the system handles it. The semantic layer defines what ODIN can answer, how much it costs, and where it breaks. Everything in this timeline builds toward that.
+    </div>
+  </header>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <h2>Overall Progress</h2>
+      <span>Week <strong>5</strong> of 30</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" style="width: 16.7%"></div>
+    </div>
+    <div class="progress-phases">
+      <span class="progress-phase-label" style="left: 6.7%">P0</span>
+      <span class="progress-phase-label" style="left: 28.3%">P1</span>
+      <span class="progress-phase-label" style="left: 48.3%">P2</span>
+      <span class="progress-phase-label" style="left: 65%">P3</span>
+      <span class="progress-phase-label" style="left: 88.3%">P4</span>
+    </div>
+  </div>
+
+  <nav class="phase-nav">
+    <button class="phase-btn" data-phase="p0"><span class="phase-dot" style="background:var(--p0)"></span>P0 Architecture</button>
+    <button class="phase-btn active" data-phase="p1"><span class="phase-dot" style="background:var(--p1)"></span>P1 Semantic Foundation</button>
+    <button class="phase-btn" data-phase="p2"><span class="phase-dot" style="background:var(--p2)"></span>P2 Controlled Interaction</button>
+    <button class="phase-btn" data-phase="p3"><span class="phase-dot" style="background:var(--p3)"></span>P3 Platform Transition</button>
+    <button class="phase-btn" data-phase="p4"><span class="phase-dot" style="background:var(--p4)"></span>P4 Operationalization</button>
+    <button class="phase-btn" data-phase="gates"><span class="phase-dot" style="background:var(--text-muted)"></span>Phase Gates</button>
+    <button class="phase-btn" data-phase="risks"><span class="phase-dot" style="background:var(--orange)"></span>Risks</button>
+  </nav>
+
+  <div class="phase-section" data-phase="p0">
+    <div class="phase-header">
+      <h2>P0: Architecture & Guardrails <span class="phase-badge" style="background:rgba(99,102,241,0.15);color:var(--p0)">Mostly Complete</span></h2>
+      <p class="phase-narrative">Decided the architecture (BigQuery + Gemini + GCP), estimated costs, defined the team, and built the sprint plan. Everything that had to be true before we could start building.</p>
+    </div>
+    <div id="p0-weeks"></div>
+  </div>
+
+  <div class="phase-section active" data-phase="p1">
+    <div class="phase-header">
+      <h2>P1: Semantic Foundation <span class="phase-badge" style="background:var(--p1-glow);color:var(--p1)">Active</span></h2>
+      <p class="phase-narrative">Build the "analytical contract" — what ODIN can answer and how. Collect the real questions from SMEs, map them to BigQuery, build semantic views, and validate that the system actually works.</p>
+    </div>
+    <div id="p1-weeks"></div>
+  </div>
+
+  <div class="phase-section" data-phase="p2">
+    <div class="phase-header">
+      <h2>P2: Controlled Interaction <span class="phase-badge" style="background:rgba(139,92,246,0.15);color:var(--p2)">Preliminary</span></h2>
+      <p class="phase-narrative">P1 proves the semantic layer works technically. P2 answers the harder question: does it work well enough that a real person would trust the answer? SMEs and stakeholders grade response quality and surface the gaps that only real usage reveals.</p>
+    </div>
+    <div id="p2-weeks"></div>
+  </div>
+
+  <div class="phase-section" data-phase="p3">
+    <div class="phase-header">
+      <h2>P3: Platform Transition <span class="phase-badge" style="background:rgba(6,182,212,0.15);color:var(--p3)">Preliminary</span></h2>
+      <p class="phase-narrative">P2 validated the answers. P3 builds the product around them. ODIN goes from "an internal tool Courtney runs" to "a thing clients can log into and use." Web app, auth, per-client isolation, cost controls. Sean is critical.</p>
+    </div>
+    <div id="p3-weeks"></div>
+  </div>
+
+  <div class="phase-section" data-phase="p4">
+    <div class="phase-header">
+      <h2>P4: Operationalization <span class="phase-badge" style="background:rgba(16,185,129,0.15);color:var(--p4)">Preliminary</span></h2>
+      <p class="phase-narrative">P3 built the product. P4 puts it in front of real clients and finds out if it delivers value. Pilot deployments, real usage data, legal frameworks, pricing validation, and the operational muscle to support production.</p>
+    </div>
+    <div id="p4-weeks"></div>
+  </div>
+
+  <div class="gates-section" data-phase="gates">
+    <div class="phase-header">
+      <h2>Phase Gates</h2>
+      <p class="phase-narrative">Each gate is a go/no-go decision. If the conditions aren't met, we don't proceed — we fix what's broken first.</p>
+    </div>
+    <div id="gates-list"></div>
+  </div>
+
+  <div class="risks-section" data-phase="risks">
+    <div class="phase-header">
+      <h2>Key Dependencies & Risks</h2>
+      <p class="phase-narrative">The things that could knock us off schedule, and what we're doing about them.</p>
+    </div>
+    <div id="risks-list"></div>
+  </div>
+
+  <footer>
+    <p>Project Muninn &middot; Starset Analytics &middot; Updated March 2, 2026</p>
+  </footer>
+</div>
+
+<script>
+const CURRENT_WEEK = 5;
+const STORAGE_KEY = 'muninn-tracker-edits';
+
+// --- Data ---
+const weeks = [
+  { phase:'p0', week:1, date:'Feb 2', focus:'Architecture scoping and ODIN assessment',
+    tasks:['Topher + Sean + Courtney first working session on ODIN deployment','Evaluate current ChatGPT Teams-based ODIN limitations (Courtney demo\'d Streamlit beta)','Sean suggested BigQuery MCP as integration approach; recommended Gemini over OpenAI','Courtney confirmed ~50 tables, ~30 fields each — manageable scope'],
+    gate:'Architecture direction decided — BigQuery as engine, Gemini as LLM, GCP as platform.', status:'done' },
+  { phase:'p0', week:2, date:'Feb 9', focus:'GCP architecture design and cost estimation',
+    tasks:['Courtney built Google Cloud app architecture with Vertex AI integration','Sean briefed on data pipeline and competitive landscape','Design per-client GCP project isolation model','Sean estimated front-end at "a couple days" once API endpoint exists'],
+    gate:'GCP architecture blueprint drafted. Vertex AI confirmed. Team roles defined.', status:'done' },
+  { phase:'p0', week:3, date:'Feb 16', focus:'Sprint planning begins',
+    tasks:['Topher + Courtney working sessions to build P1 sprint plan','Built sprint board in SharePoint, migrated to Confluence','Decided async email for most SMEs, meeting for Cheryl','Chris K recommended adding Tim, Ashley, Mindy, Greg for advisory'],
+    gate:'P1 sprint structure defined (Collect → Build → Validate). SME list finalized.', status:'done' },
+  { phase:'p0', week:4, date:'Feb 23', focus:'Sprint plan refinement and presentation prep',
+    tasks:['Courtney reviews and updates estimated hours for all P1 tasks','SME outreach emails drafted for each individual SME','Topher converts working doc into PowerPoint deck','Cost estimates include HFMA subset and national data set scenarios'],
+    gate:'Sprint deck complete. SME outreach ready. Sprint board ready for Jira migration.', status:'done' },
+  { phase:'p1', week:5, date:'Mar 2', focus:'Greenlight and launch', stage:'Stage 1: Collect',
+    tasks:['Full-team kickoff meeting ✓','Send SME outreach emails to Bobby, Andy, Chris K, Tanner, Cheryl, Jenna, Chris H','Begin Gemini transition from OpenAI (TH-923)','Migrate sprint board to Jira','Set up weekly Friday standup cadence'],
+    milestone:'The machine is in motion. The people who know what ODIN needs to answer have been asked, and the infrastructure to track and execute is live.',
+    why:'Everything downstream depends on SME input flowing in and Courtney being unblocked on Gemini. No questions = no semantic layer. No Gemini = no place to build it.',
+    minimum:'SME emails sent to all 7 SMEs. Friday standup confirmed with David. Jira migration started.',
+    target:'All of the above plus Jira board populated with P1 tickets and Gemini transition actively underway.', status:'active' },
+  { phase:'p1', week:6, date:'Mar 9', focus:'Question collection and Slack scraping',
+    tasks:['Collect returning SME question submissions','Schedule Cheryl and Tanner meetings','Scrape Greg\'s Slack questions (TH-931)','Follow up with non-responsive SMEs','Prepare development cost pro forma (TH-959)'],
+    milestone:'We have real questions from the people who know the data — the raw material that defines what ODIN will be able to answer.',
+    why:'The SME questions ARE the product definition. Without them, we\'re guessing what ODIN should do. Greg\'s Slack questions give us real-world prompt phrasing — how people actually ask for data.',
+    minimum:'At least 3 SMEs have responded (even partially). Slack scrape complete. Cost pro forma delivered.',
+    target:'5+ SMEs responded. Cheryl and Tanner meetings scheduled. Gemini transition on track for Wk 7.', status:'upcoming' },
+  { phase:'p1', week:7, date:'Mar 16', focus:'Question mapping begins', stage:'Stage 2: Build',
+    tasks:['Consolidate all collected questions from SMEs and Slack','Identify top 25 priority analytical questions','Begin mapping questions to BigQuery tables and columns','Cost estimation per query (scan size analysis)'],
+    milestone:'We know what ODIN needs to answer, and we\'ve started connecting those questions to actual data. The semantic layer goes from concept to engineering.',
+    why:'The questions define the product. The mapping makes it buildable. This is where Courtney can start seeing what\'s technically feasible.',
+    minimum:'Top 15 questions identified. Mapping started on first batch. Gemini transition complete or near-complete.',
+    target:'Top 25 identified. Mapping underway for all. Gemini done (TH-923).', status:'upcoming' },
+  { phase:'p1', week:8, date:'Mar 23', focus:'Table mapping and semantic layer design',
+    tasks:['Complete question-to-table mapping for all 25 priority questions','Begin semantic layer spec: subset table structures per domain','Document semantic layer spec template (TH-963)','Identify gaps — questions that don\'t map cleanly'],
+    milestone:'Every priority question is mapped to specific tables and columns. We know what\'s buildable and what has gaps.',
+    why:'This mapping is the blueprint Courtney builds from. The gaps tell us where the data doesn\'t support the questions.',
+    minimum:'20+ questions fully mapped. Spec template drafted. Major gaps documented.',
+    target:'All 25 mapped. First domain spec complete. No surprise gaps.', status:'upcoming' },
+  { phase:'p1', week:9, date:'Mar 30', focus:'Semantic view construction begins',
+    tasks:['Build first semantic views in Vertex AI / Gemini','Begin training rules documentation','Incorporate client deliverables as training context (TH-965)'],
+    milestone:'ODIN can answer its first real questions against actual data. The semantic layer is no longer a plan — it\'s working software.',
+    why:'This is proof of concept. If the first 2–3 views work — if Gemini can take a natural language question, route it through the semantic layer, and return a correct answer — then the pattern is proven.',
+    minimum:'2 semantic views built and returning reasonable answers. Training rules started.',
+    target:'3+ views queryable. Training rules underway. Client deliverables identified for ingestion.', status:'upcoming' },
+  { phase:'p1', week:10, date:'Apr 6', focus:'Semantic view buildout continues',
+    tasks:['Continue building semantic views across remaining domains','Begin test front-end design (TH-942) — Courtney + Sean','Test early views with simple prompts for accuracy'],
+    milestone:'The semantic layer covers most priority questions, and we\'re starting to see how it performs with real natural language prompts.',
+    why:'Prompt testing reveals whether the semantic layer actually works for how people ask questions. A view might be technically correct but fail because Gemini misinterprets the phrasing.',
+    minimum:'6+ views built. Test front-end approach decided. At least one end-to-end prompt test working.',
+    target:'Majority of views built. Prompt tests showing reasonable accuracy. Sean engaged on front-end.', status:'upcoming' },
+  { phase:'p1', week:11, date:'Apr 13', focus:'Test front-end and gap analysis', stage:'Stage 3: Validate',
+    tasks:['Deploy test front-end for internal validation','SMEs begin interacting with semantic views','Identify view gaps — wrong or missing answers','Begin recollection from SMEs if critical gaps found','Document session architecture (TH-964)'],
+    milestone:'Real users are asking ODIN real questions for the first time. We can see what works and what doesn\'t — not in theory, but in practice.',
+    why:'This is the first "does it actually work?" moment. SME feedback here is the most valuable input in the entire sprint. What they find directly shapes what ships.',
+    minimum:'Test front-end accessible to 2+ SMEs. Initial gap list started. Session architecture documented.',
+    target:'3+ SMEs actively testing. Gap list complete. Recollection requests sent for critical gaps.', status:'upcoming' },
+  { phase:'p1', week:12, date:'Apr 20', focus:'Validation and P1 closeout',
+    tasks:['Cost validation across all views — flag any exceeding $1/query (TH-944)','Prompt stress testing: varied phrasings, edge cases, hallucinations','Verify source attribution (internal vs. external)','Document Analytical Contract v1','P1 retrospective'],
+    milestone:'We know what ODIN can answer, how much it costs, and where it breaks. The Analytical Contract is the product spec for P2.',
+    why:'This is the P1 gate. If we can\'t document what ODIN does, at what cost, and with what limitations, we can\'t move forward. The Analytical Contract is also the foundation for honest client conversations.',
+    minimum:'Cost validation complete (none exceeding $1/query). Core stress testing done. Contract v1 drafted. Retro held.',
+    target:'Full stress testing documented. Contract v1 complete. P2 plan refined. P1 DONE.', status:'upcoming' },
+  { phase:'p2', week:13, date:'Apr 27', focus:'Grading framework and expanded access', tasks:['Define grading rubric','Expand access to broader internal group','Fix critical P1 issues','Begin tracking prompt-response pairs'], gate:'Grading rubric defined. Expanded user group has access. Critical P1 issues resolved.', status:'upcoming' },
+  { phase:'p2', week:14, date:'May 4', focus:'First structured grading cycle', tasks:['Each tester submits 5-10 prompts and grades responses','Iterate on views from feedback','Test comparative analytics','Document failure modes'], gate:'First grading cycle complete. Failure modes cataloged. Iteration priorities set.', status:'upcoming' },
+  { phase:'p2', week:15, date:'May 11', focus:'Iteration and second grading cycle', tasks:['Implement fixes from first cycle','Run second grading cycle','Measure improvement between cycles','Define acceptance criteria'], gate:'Second grading cycle complete. Measurable improvement. Acceptance criteria drafted.', status:'upcoming' },
+  { phase:'p2', week:16, date:'May 18', focus:'P2 closeout and P3 readiness', tasks:['Lock semantic layer definitions','Document known limitations','Assess production readiness','Confirm Sean for P3'], gate:'Semantic layer frozen. Acceptance criteria met. Sean confirmed for P3. P2 DONE.', status:'upcoming' },
+  { phase:'p3', week:17, date:'May 25', focus:'Web app architecture and scaffolding', tasks:['Define web app architecture','Set up project scaffolding','Design auth approach','Define per-client provisioning'], gate:'Web app repo created. Architecture decided. Auth approach confirmed.', status:'upcoming' },
+  { phase:'p3', week:18, date:'Jun 1', focus:'Authentication and core infrastructure', tasks:['Implement user auth','Build per-client GCP provisioning','Set up Gemini API integration','Begin usage tracking'], gate:'Users can log in. One client project provisioned. API integration functional.', status:'upcoming' },
+  { phase:'p3', week:19, date:'Jun 8', focus:'Core UI and query interface', tasks:['Build primary query/chat interface','Implement source attribution display','Connect front-end to semantic layer','Begin per-client data partitioning'], gate:'Users can ask questions through web UI and get responses. Source labels visible.', status:'upcoming' },
+  { phase:'p3', week:20, date:'Jun 15', focus:'Client customization and cost controls', tasks:['Per-client cost caps and lockout','Per-user usage tracking','Client-specific UI customization','Closed-world mode option'], gate:'Per-client cost controls functional. One deployment with closed-world mode.', status:'upcoming' },
+  { phase:'p3', week:21, date:'Jun 22', focus:'Integration testing and security', tasks:['End-to-end integration testing','Security review','Performance testing','Usage billing dashboard'], gate:'Integration tests passing. No critical security issues. Billing data visible.', status:'upcoming' },
+  { phase:'p3', week:22, date:'Jun 29', focus:'P3 closeout and pilot readiness', tasks:['Fix integration/security issues','Internal team dogfooding','Document deployment playbook','Finalize pricing model'], gate:'Platform on production. Internal team using daily. Deployment playbook. Pricing drafted. P3 DONE.', status:'upcoming' },
+  { phase:'p4', week:23, date:'Jul 6', focus:'Pilot client selection and preparation', tasks:['Select 1-2 pilot clients','Prepare client-specific data subsets','Begin semantic layer customization','Initiate legal review'], gate:'Pilot clients selected. Data subsets identified. Legal review initiated.', status:'upcoming' },
+  { phase:'p4', week:24, date:'Jul 13', focus:'Pilot client semantic layer buildout', tasks:['Build and validate pilot client views','Stress test with client prompts','Configure GCP project and accounts','Draft onboarding materials'], gate:'Pilot views built and tested. GCP project provisioned.', status:'upcoming' },
+  { phase:'p4', week:25, date:'Jul 20', focus:'Pilot deployment — soft launch', tasks:['Deploy ODIN for pilot clients','Onboarding walkthrough','Monitor usage, cost, and quality','Establish feedback channel'], gate:'Pilot clients actively using ODIN. No critical issues in first 48 hours.', status:'upcoming' },
+  { phase:'p4', week:26, date:'Jul 27', focus:'Pilot feedback and iteration', tasks:['Collect structured feedback','Iterate on views and UI','Monitor cost actuals vs. estimates','Legal review progress check'], gate:'First feedback collected. Iteration priorities set. Costs within estimates.', status:'upcoming' },
+  { phase:'p4', week:27, date:'Aug 3', focus:'Production hardening', tasks:['Implement fixes from feedback','Production monitoring and alerting','Disaster recovery validation','Finalize billing instrumentation'], gate:'Production monitoring live. Billing validated. Pilot clients report improvement.', status:'upcoming' },
+  { phase:'p4', week:28, date:'Aug 10', focus:'Go-to-market preparation', tasks:['Finalize pricing tiers and contracts','Sales enablement materials','CSOG readout','Legal sign-off','Define onboarding SOP'], gate:'Pricing finalized. Sales materials ready. Legal approved. Onboarding SOP documented.', status:'upcoming' },
+  { phase:'p4', week:29, date:'Aug 17', focus:'Broader deployment preparation', tasks:['Onboard second wave of clients','Train internal team','Update external materials','Performance optimization'], gate:'Second wave onboarding. Internal team trained. No blocking issues.', status:'upcoming' },
+  { phase:'p4', week:30, date:'Aug 24', focus:'Production launch and P4 closeout', tasks:['ODIN production launch','Establish operational cadence','Define repeatable process for new domains','Full 30-week retrospective'], gate:'ODIN is live. Operational runbook in place. Repeatable process documented. 30-WEEK PLAN COMPLETE.', status:'upcoming' }
+];
+
+const gates = [
+  { from:'P0', to:'P1', week:5, color:'var(--p0)', condition:'Architecture decided. Sprint plan approved. Team greenlit.' },
+  { from:'P1', to:'P2', week:12, color:'var(--p1)', condition:'Analytical Contract v1 complete. All views cost-validated. Stress testing passed.' },
+  { from:'P2', to:'P3', week:16, color:'var(--p2)', condition:'Semantic layer frozen. Acceptance criteria met. Sean confirmed for P3.' },
+  { from:'P3', to:'P4', week:22, color:'var(--p3)', condition:'Platform on production infrastructure. Internal team dogfooding. Pricing model drafted.' },
+  { from:'P4', to:'Live', week:30, color:'var(--p4)', condition:'Production launch. Clients onboarded. Operational runbook in place.' }
+];
+
+const risks = [
+  { risk:'SME question submissions delayed', impact:'P1 Wk 6–7 blocked', mitigation:'Follow up aggressively Wk 6. Lower threshold to proceed (15 questions vs. 25).' },
+  { risk:'Gemini transition takes longer than expected', impact:'P1 Build phase delayed', mitigation:'Must complete by Wk 7. If slipping, escalate immediately.' },
+  { risk:'Capacity — Courtney stretched thin', impact:'All phases', mitigation:'Weekly Friday standups surface this early. David committed to remediating quickly.' },
+  { risk:'Sean unavailable for P3', impact:'P3 web app blocked', mitigation:'Confirm availability by P2 closeout (Wk 16). Identify backup if needed.' },
+  { risk:'Pilot feedback requires major rework', impact:'P4 timeline slips', mitigation:'P2 grading cycles designed to catch this before P3.' },
+  { risk:'Third-party terms unresolved', impact:'Client contracts delayed', mitigation:'Initiate legal review Wk 23; resolution needed by Wk 28.' },
+  { risk:'National data set cost exceeds estimates', impact:'Pricing model breaks', mitigation:'P1 cost validation (Wk 12) and pilot monitoring (Wk 25–27) are checkpoints.' },
+  { risk:'Sales overextends on capabilities', impact:'Client expectations mismatch', mitigation:'David + Cheryl + Greg aligned on messaging discipline during P1–P2.' }
+];
+
+// --- localStorage ---
+function loadEdits() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+}
+
+function saveEdit(key, value) {
+  const edits = loadEdits();
+  edits[key] = value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+  flashSave();
+}
+
+function resetAll() {
+  if (confirm('Reset all edits to defaults? This cannot be undone.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+let saveTimeout;
+function flashSave() {
+  const el = document.getElementById('saveIndicator');
+  el.classList.add('show');
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function e(key, defaultVal) {
+  const edits = loadEdits();
+  return edits[key] !== undefined ? edits[key] : defaultVal;
+}
+
+function ce(key, defaultVal, tag) {
+  tag = tag || 'span';
+  const val = e(key, defaultVal);
+  return `<${tag} contenteditable="true" data-key="${key}" onblur="saveEdit('${key}', this.innerText)">${val}</${tag}>`;
+}
+
+// --- Render ---
+function renderWeekCard(w) {
+  const isCurrent = w.week === CURRENT_WEEK;
+  const statusClass = w.status === 'done' ? 'completed' : (isCurrent ? 'current' : '');
+  const statusPill = w.status === 'done' ? '<span class="status-pill status-done">Done</span>' :
+                     w.status === 'active' ? '<span class="current-badge">This Week</span>' :
+                     '<span class="status-pill status-upcoming">Wk ' + w.week + '</span>';
+
+  const hasDetailed = w.milestone && w.why && w.minimum && w.target;
+  const wk = 'wk' + w.week;
+
+  const tasksHTML = w.tasks.map((t, i) =>
+    `<li>${ce(wk + '-task' + i, t)}</li>`
+  ).join('');
+
+  let gateHTML = '';
+  if (hasDetailed) {
+    gateHTML = `
+      <div class="gate-section">
+        <h4><span class="gate-icon">&#9670;</span> True by Friday</h4>
+        <div class="gate-milestone">${ce(wk + '-milestone', w.milestone)}</div>
+        <div class="gate-why">${ce(wk + '-why', w.why)}</div>
+        <div class="gate-bars">
+          <div class="gate-bar minimum">
+            <div class="gate-bar-label">Minimum Bar</div>
+            <p>${ce(wk + '-minimum', w.minimum)}</p>
+          </div>
+          <div class="gate-bar target">
+            <div class="gate-bar-label">Target</div>
+            <p>${ce(wk + '-target', w.target)}</p>
+          </div>
+        </div>
+      </div>`;
+  } else if (w.gate) {
+    gateHTML = `
+      <div class="gate-section">
+        <h4><span class="gate-icon">&#9670;</span> True by Friday</h4>
+        <div class="gate-simple">${ce(wk + '-gate', w.gate)}</div>
+      </div>`;
+  }
+
+  return `
+    <div class="week-card ${statusClass} ${isCurrent ? 'open' : ''}" data-week="${w.week}">
+      <div class="week-card-header" onclick="toggleCard(this)">
+        <div class="week-card-left">
+          <span class="week-num">Wk ${w.week}</span>
+          <span class="week-date">${w.date}</span>
+          <span class="week-focus">${ce(wk + '-focus', w.focus)}</span>
+        </div>
+        <div class="week-status">
+          ${statusPill}
+          <span class="chevron">&#x203A;</span>
+        </div>
+      </div>
+      <div class="week-card-body">
+        <div class="week-toolbar">
+          <button class="btn-export" onclick="event.stopPropagation(); exportWeekPDF(${w.week})">&#9660; Export PDF</button>
+        </div>
+        <div class="week-tasks">
+          <ul>${tasksHTML}</ul>
+        </div>
+        ${gateHTML}
+      </div>
+    </div>`;
+}
+
+function toggleCard(header) {
+  const card = header.parentElement;
+  // Don't toggle if user clicked on an editable field
+  if (document.activeElement && document.activeElement.hasAttribute('contenteditable')) return;
+  card.classList.toggle('open');
+}
+
+function renderPhase(phase, containerId) {
+  const container = document.getElementById(containerId);
+  const phaseWeeks = weeks.filter(w => w.phase === phase);
+  let html = '';
+  let currentStage = null;
+  phaseWeeks.forEach(w => {
+    if (w.stage && w.stage !== currentStage) {
+      currentStage = w.stage;
+      html += `<div class="stage-label">${currentStage}</div>`;
+    }
+    html += renderWeekCard(w);
+  });
+  container.innerHTML = html;
+}
+
+function renderGates() {
+  document.getElementById('gates-list').innerHTML = gates.map(g => `
+    <div class="gate-card">
+      <div class="gate-card-accent" style="background:${g.color}"></div>
+      <div class="gate-card-body">
+        <div class="gate-card-top">
+          <span class="gate-card-title">${g.from} → ${g.to}</span>
+          <span class="gate-card-week">Week ${g.week}</span>
+        </div>
+        <div class="gate-card-condition">${g.condition}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderRisks() {
+  document.getElementById('risks-list').innerHTML = risks.map(r => `
+    <div class="risk-card">
+      <h4>&#9888; ${r.risk}</h4>
+      <div class="risk-impact">Impact: ${r.impact}</div>
+      <div class="risk-mitigation"><strong>Mitigation:</strong> ${r.mitigation}</div>
+    </div>`).join('');
+}
+
+// --- PDF Export ---
+function exportWeekPDF(weekNum) {
+  const w = weeks.find(x => x.week === weekNum);
+  if (!w) return;
+
+  const wk = 'wk' + w.week;
+  const focus = e(wk + '-focus', w.focus);
+  const tasks = w.tasks.map((t, i) => e(wk + '-task' + i, t));
+
+  const hasDetailed = w.milestone && w.why && w.minimum && w.target;
+
+  let gateHTML = '';
+  if (hasDetailed) {
+    gateHTML = `
+      <div class="gate-box">
+        <h3>True by Friday</h3>
+        <div class="milestone"><strong>Milestone:</strong> ${e(wk + '-milestone', w.milestone)}</div>
+        <div class="why"><strong>Why it matters:</strong> <em>${e(wk + '-why', w.why)}</em></div>
+        <div class="bars">
+          <div class="bar min-bar">
+            <div class="bar-label">MINIMUM BAR</div>
+            <p>${e(wk + '-minimum', w.minimum)}</p>
+          </div>
+          <div class="bar target-bar">
+            <div class="bar-label">TARGET</div>
+            <p>${e(wk + '-target', w.target)}</p>
+          </div>
+        </div>
+      </div>`;
+  } else if (w.gate) {
+    gateHTML = `
+      <div class="gate-box">
+        <h3>True by Friday</h3>
+        <p class="simple-gate">${e(wk + '-gate', w.gate)}</p>
+      </div>`;
+  }
+
+  const phaseNames = { p0:'P0: Architecture & Guardrails', p1:'P1: Semantic Foundation', p2:'P2: Controlled Interaction', p3:'P3: Platform Transition', p4:'P4: Operationalization' };
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Week ${w.week} — ${focus}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif; padding:48px; color:#1a1a2e; line-height:1.6; max-width:800px; margin:0 auto; }
+  .header { border-bottom:2px solid #3b82f6; padding-bottom:16px; margin-bottom:24px; }
+  .header h1 { font-size:24px; font-weight:700; color:#1a1a2e; }
+  .header .meta { font-size:14px; color:#64748b; margin-top:4px; }
+  .phase-label { font-size:12px; text-transform:uppercase; letter-spacing:1px; color:#3b82f6; font-weight:600; margin-bottom:4px; }
+  h2 { font-size:18px; margin:24px 0 12px; color:#1a1a2e; }
+  ul { list-style:disc; padding-left:24px; margin:8px 0; }
+  li { font-size:14px; color:#334155; padding:2px 0; }
+  .gate-box { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:20px; margin-top:24px; }
+  .gate-box h3 { font-size:14px; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin-bottom:12px; }
+  .milestone { font-size:15px; color:#1a1a2e; margin-bottom:10px; }
+  .why { font-size:14px; color:#475569; margin-bottom:16px; }
+  .bars { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .bar { padding:12px; border-radius:6px; font-size:13px; }
+  .min-bar { background:#fefce8; border:1px solid #fde68a; }
+  .target-bar { background:#f0fdf4; border:1px solid #bbf7d0; }
+  .bar-label { font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:4px; }
+  .min-bar .bar-label { color:#ca8a04; }
+  .target-bar .bar-label { color:#16a34a; }
+  .bar p { color:#475569; }
+  .simple-gate { font-size:14px; color:#475569; }
+  .footer { margin-top:32px; padding-top:16px; border-top:1px solid #e2e8f0; font-size:12px; color:#94a3b8; }
+  @media print { body { padding:24px; } }
+</style></head><body>
+  <div class="header">
+    <div class="phase-label">${phaseNames[w.phase] || w.phase}${w.stage ? ' — ' + w.stage : ''}</div>
+    <h1>Week ${w.week}: ${focus}</h1>
+    <div class="meta">${w.date}, 2026 &middot; Project Muninn / ODIN Tracker</div>
+  </div>
+  <h2>Tasks</h2>
+  <ul>${tasks.map(t => '<li>' + t + '</li>').join('')}</ul>
+  ${gateHTML}
+  <div class="footer">Project Muninn &middot; Starset Analytics &middot; Exported ${new Date().toLocaleDateString()}</div>
+</body></html>`;
+
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(() => win.print(), 300);
+}
+
+// --- Nav ---
+document.querySelectorAll('.phase-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const phase = btn.dataset.phase;
+    document.querySelectorAll('.phase-section, .gates-section, .risks-section').forEach(s => s.classList.remove('active'));
+    const target = document.querySelector(`div[data-phase="${phase}"]`);
+    if (target) target.classList.add('active');
+  });
+});
+
+// Prevent card toggle when clicking inside editable content
+document.addEventListener('click', function(evt) {
+  if (evt.target.hasAttribute('contenteditable')) {
+    evt.stopPropagation();
+  }
+}, true);
+
+// --- Init ---
+renderPhase('p0', 'p0-weeks');
+renderPhase('p1', 'p1-weeks');
+renderPhase('p2', 'p2-weeks');
+renderPhase('p3', 'p3-weeks');
+renderPhase('p4', 'p4-weeks');
+renderGates();
+renderRisks();
+</script>
+</body>
+</html>
