@@ -32,4 +32,4 @@ A single-page dashboard that tracks the 30-week ODIN development plan from archi
 
 Open `index.html` in a browser. That's it.
 
-Edits persist in localStorage. Click "Reset All Edits" to revert to defaults.
+Edits made in the browser persist in your local browser storage only. To make changes visible to everyone, update the week data in `index.html` and push.
