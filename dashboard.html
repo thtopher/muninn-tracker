@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ODIN / Muninn — Steering Dashboard</title>
+<meta property="og:title" content="ODIN / Muninn — Steering Dashboard">
+<meta property="og:description" content="Workstream-based steering dashboard for Project Muninn — track parallel development lanes, CEO decisions, and weekly commitments.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://thtopher.github.io/muninn-tracker/dashboard.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ODIN / Muninn — Steering Dashboard">
+<meta name="twitter:description" content="Workstream steering dashboard for Project Muninn — parallel lanes, open questions, and Friday commitments.">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface-2: #1a2236;
+    --surface-3: #0d1320;
+    --border: #1e293b;
+    --border-bright: #334155;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.15);
+    --p0: #6366f1;
+    --p1: #3b82f6;
+    --p1-glow: rgba(59, 130, 246, 0.2);
+    --p2: #8b5cf6;
+    --p3: #06b6d4;
+    --p4: #10b981;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --orange: #f97316;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header { padding: 40px 0 28px; border-bottom: 1px solid var(--border); }
+
+  .header-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap;
+  }
+
+  .logo { display: flex; align-items: center; gap: 16px; }
+
+  .logo-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--p1), var(--p2));
+    border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+  }
+
+  .logo h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo h1 span { color: var(--text-muted); font-weight: 400; }
+
+  .header-meta { text-align: right; color: var(--text-dim); font-size: 14px; }
+  .header-meta strong { color: var(--text); }
+
+  .header-actions { display: flex; align-items: center; gap: 12px; margin-top: 8px; justify-content: flex-end; }
+
+  .btn-small {
+    padding: 4px 12px; border: 1px solid var(--border); background: transparent;
+    color: var(--text-muted); border-radius: 6px; cursor: pointer; font-size: 12px;
+    font-family: inherit; transition: all 0.2s; text-decoration: none;
+  }
+  .btn-small:hover { border-color: var(--text-muted); color: var(--text); }
+  .btn-small.danger:hover { border-color: var(--red); color: var(--red); }
+
+  .save-indicator {
+    font-size: 12px; color: var(--green); opacity: 0; transition: opacity 0.3s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .save-indicator.show { opacity: 1; }
+
+  /* Countdown bar */
+  .countdown-bar {
+    display: flex; gap: 24px; align-items: center; justify-content: center;
+    padding: 16px 24px; margin-top: 24px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    flex-wrap: wrap;
+  }
+
+  .countdown-item {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+
+  .countdown-number {
+    font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .countdown-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted);
+  }
+
+  .countdown-sep {
+    width: 1px; height: 40px; background: var(--border);
+  }
+
+  /* Progress bar */
+  .progress-section { padding: 24px 0; border-bottom: 1px solid var(--border); }
+
+  .progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .progress-header h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+  .progress-header span { font-size: 14px; color: var(--text-dim); }
+  .progress-header span strong { color: var(--accent); font-size: 18px; }
+
+  .progress-track { height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+
+  .progress-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--p0), var(--p1), var(--p2), var(--p3), var(--p4));
+    transition: width 0.8s ease;
+  }
+
+  .progress-phases { display: flex; margin-top: 8px; position: relative; height: 24px; }
+
+  .progress-phase-label {
+    font-size: 11px; color: var(--text-muted); position: absolute;
+    transform: translateX(-50%); white-space: nowrap;
+  }
+
+  /* Section headers */
+  .section-title {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-muted); margin-bottom: 20px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Workstream grid */
+  .workstream-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    padding: 32px 0;
+  }
+
+  .lane-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    transition: border-color 0.2s;
+  }
+  .lane-card:hover { border-color: var(--border-bright); }
+
+  .lane-accent {
+    width: 4px; flex-shrink: 0;
+  }
+
+  .lane-body {
+    padding: 20px 24px; flex: 1; min-width: 0;
+  }
+
+  .lane-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; gap: 12px;
+  }
+
+  .lane-title {
+    font-size: 16px; font-weight: 600; letter-spacing: -0.2px;
+  }
+
+  .status-pill {
+    font-size: 11px; padding: 3px 10px; border-radius: 10px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .status-ahead, .status-framework { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+  .status-on-track { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+  .status-waiting { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+  .status-not-started { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+
+  .lane-section-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-muted); margin-bottom: 8px; margin-top: 16px;
+    font-weight: 600;
+  }
+  .lane-section-label:first-of-type { margin-top: 0; }
+
+  .shipped-list, .next-list {
+    list-style: none; padding: 0;
+  }
+
+  .shipped-list li {
+    padding: 3px 0; font-size: 13px; color: var(--text-dim);
+    display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+  }
+
+  .shipped-check {
+    color: var(--green); flex-shrink: 0; font-size: 13px; margin-top: 2px;
+  }
+
+  .shipped-week {
+    font-size: 11px; color: var(--text-muted); background: var(--surface-2);
+    padding: 1px 6px; border-radius: 4px; flex-shrink: 0; margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .next-list li {
+    padding: 3px 0 3px 16px; font-size: 13px; color: var(--text-dim);
+    position: relative; line-height: 1.5;
+  }
+
+  .next-list li::before {
+    content: ''; position: absolute; left: 0; top: 10px;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  .blocker-section {
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);
+  }
+
+  .blocker-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .blocker-label.clear { color: var(--green); }
+  .blocker-label.blocked { color: var(--red); }
+
+  .blocker-text {
+    font-size: 13px; line-height: 1.5;
+  }
+  .blocker-text.clear { color: var(--text-muted); }
+  .blocker-text.blocked { color: var(--text-dim); }
+
+  /* Friday Panel */
+  .friday-panel {
+    border-top: 2px solid var(--border);
+    padding: 40px 0 32px;
+    background: linear-gradient(180deg, var(--surface-3) 0%, var(--bg) 100%);
+    margin: 0 -24px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .friday-panel-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .friday-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .friday-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--p2));
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .friday-header h2 {
+    font-size: 22px; font-weight: 600; letter-spacing: -0.3px;
+  }
+  .friday-header h2 span { color: var(--text-muted); font-weight: 400; }
+
+  /* Open Questions */
+  .questions-grid {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+  .question-card:hover { border-color: var(--border-bright); }
+
+  .question-num {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--accent);
+  }
+
+  .question-text {
+    font-size: 14px; color: var(--text-dim); line-height: 1.6; flex: 1;
+  }
+
+  /* Commitments */
+  .commitments-section { margin-bottom: 36px; }
+
+  .commitment-subtitle {
+    font-size: 15px; font-weight: 600; color: var(--text);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+
+  .commitment-date {
+    font-size: 12px; color: var(--text-muted); font-weight: 400;
+    background: var(--surface-2); padding: 2px 10px; border-radius: 6px;
+  }
+
+  .commitment-options {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+  }
+
+  .commitment-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .commitment-card:hover {
+    border-color: var(--border-bright);
+  }
+  .commitment-card.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow), inset 0 0 0 1px rgba(59, 130, 246, 0.15);
+  }
+
+  .commitment-option-label {
+    font-size: 12px; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .radio-dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--border-bright);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .commitment-card.selected .radio-dot {
+    border-color: var(--accent);
+  }
+  .radio-dot-inner {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: transparent; transition: all 0.2s;
+  }
+  .commitment-card.selected .radio-dot-inner {
+    background: var(--accent);
+  }
+
+  .commitment-text {
+    font-size: 14px; color: var(--text-dim); line-height: 1.6;
+  }
+
+  .locked-indicator {
+    display: none; margin-top: 12px; padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--green); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    align-items: center; gap: 6px;
+  }
+  .commitment-card.selected .locked-indicator {
+    display: flex;
+  }
+
+  /* Past commitments */
+  .past-commitments { margin-top: 0; }
+
+  .past-commitment {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .past-week {
+    font-size: 12px; font-weight: 700; color: var(--text-muted);
+    background: var(--surface-2); padding: 4px 10px; border-radius: 6px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  .past-text {
+    font-size: 13px; color: var(--text-dim); line-height: 1.5; flex: 1;
+  }
+
+  .past-status {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; flex-shrink: 0; padding: 3px 10px;
+    border-radius: 8px;
+  }
+  .past-status.met { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+  .past-status.missed { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .past-status.partial { background: rgba(234, 179, 8, 0.15); color: var(--yellow); }
+
+  /* Editable fields */
+  [contenteditable] {
+    border-radius: 4px; transition: background 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  [contenteditable]:hover {
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  [contenteditable]:focus {
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.3);
+  }
+
+  footer {
+    padding: 32px 0; border-top: 1px solid var(--border);
+    text-align: center; color: var(--text-muted); font-size: 13px;
+  }
+
+  @media (max-width: 900px) {
+    .workstream-grid { grid-template-columns: 1fr; }
+    .commitment-options { grid-template-columns: 1fr; }
+    .header-top { flex-direction: column; }
+    .header-meta { text-align: left; }
+  }
+
+  @media (max-width: 600px) {
+    .past-commitment { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .countdown-bar { gap: 16px; padding: 12px 16px; }
+    .countdown-number { font-size: 24px; }
+  }
+
+  /* PDF Export Button */
+  .btn-export-pdf {
+    padding: 6px 14px; border: 1px solid var(--accent); background: rgba(59, 130, 246, 0.1);
+    color: var(--accent); border-radius: 6px; cursor: pointer; font-size: 12px;
+    font-family: inherit; transition: all 0.2s; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-export-pdf:hover { background: rgba(59, 130, 246, 0.2); }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icon">&#x1D245;</div>
+        <h1>Muninn <span>/ Steering Dashboard</span></h1>
+      </div>
+      <div class="header-meta">
+        <div id="headerDate"></div>
+        <div id="headerWeek"></div>
+        <div class="header-actions">
+          <span class="save-indicator" id="saveIndicator">&#10003; Saved</span>
+          <button class="btn-export-pdf" onclick="exportPDF()">&#8681; Export PDF</button>
+          <a href="index.html" class="btn-small">Legacy Timeline &rarr;</a>
+          <button class="btn-small danger" onclick="resetAll()">Reset All Edits</button>
+        </div>
+      </div>
+    </div>
+    <div class="countdown-bar" id="countdownBar"></div>
+  </header>
+
+  <div class="progress-section">
+    <div class="progress-header">
+      <h2>Overall Progress</h2>
+      <span id="progressLabel"></span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-phases">
+      <span class="progress-phase-label" style="left: 6.7%">P0</span>
+      <span class="progress-phase-label" style="left: 28.3%">P1</span>
+      <span class="progress-phase-label" style="left: 48.3%">P2</span>
+      <span class="progress-phase-label" style="left: 65%">P3</span>
+      <span class="progress-phase-label" style="left: 88.3%">P4</span>
+    </div>
+  </div>
+
+  <!-- Workstream Lanes -->
+  <div style="padding-top: 32px;">
+    <h3 class="section-title">Workstream Lanes</h3>
+  </div>
+
+  <div class="workstream-grid" id="workstreamGrid"></div>
+</div>
+
+<!-- Friday Panel -->
+<div class="friday-panel">
+  <div class="friday-panel-inner">
+    <div class="friday-header">
+      <div class="friday-icon">&#9670;</div>
+      <h2>Friday Panel <span>/ CEO Steering</span></h2>
+    </div>
+
+    <h3 class="section-title">Open Questions for David</h3>
+    <div class="questions-grid" id="questionsGrid"></div>
+
+    <div class="commitments-section">
+      <h3 class="section-title">Suggested Commitments</h3>
+      <div class="commitment-subtitle">
+        True by Next Friday
+        <span class="commitment-date" id="nextFridayDate"></span>
+      </div>
+      <div class="commitment-options" id="commitmentOptions"></div>
+    </div>
+
+    <h3 class="section-title" style="margin-top: 36px;">Past Commitments</h3>
+    <div class="past-commitments" id="pastCommitments"></div>
+  </div>
+</div>
+
+<div class="container">
+  <footer>
+    <p>Project Muninn &middot; Starset Analytics &middot; <span id="footerDate"></span></p>
+  </footer>
+</div>
+
+<script>
+const STORAGE_KEY = 'muninn-steering-edits';
+
+// --- Date Awareness ---
+const PLAN_START = new Date(2026, 1, 2);
+const PLAN_END = new Date(2026, 7, 28);
+const PHASES = [
+  { id:'p0', name:'P0 Architecture', start:1, end:4, color:'var(--p0)' },
+  { id:'p1', name:'P1 Semantic Foundation', start:5, end:12, color:'var(--p1)' },
+  { id:'p2', name:'P2 Controlled Interaction', start:13, end:16, color:'var(--p2)' },
+  { id:'p3', name:'P3 Platform Transition', start:17, end:22, color:'var(--p3)' },
+  { id:'p4', name:'P4 Operationalization', start:23, end:30, color:'var(--p4)' },
+];
+
+const today = new Date();
+today.setHours(0,0,0,0);
+
+function daysBetween(a, b) { return Math.ceil((b - a) / (1000*60*60*24)); }
+
+const daysSinceStart = daysBetween(PLAN_START, today);
+const CURRENT_WEEK = Math.max(1, Math.min(30, Math.floor(daysSinceStart / 7) + 1));
+const currentPhase = PHASES.find(p => CURRENT_WEEK >= p.start && CURRENT_WEEK <= p.end) || PHASES[0];
+
+const phaseEndDate = new Date(PLAN_START);
+phaseEndDate.setDate(phaseEndDate.getDate() + (currentPhase.end * 7) - 1);
+
+const daysToPhaseEnd = Math.max(0, daysBetween(today, phaseEndDate));
+const daysToPlanEnd = Math.max(0, daysBetween(today, PLAN_END));
+const weeksRemaining = 30 - CURRENT_WEEK;
+// Time-based progress (for countdown context)
+const timePct = Math.min(100, Math.max(0, ((CURRENT_WEEK - 1) / 30 * 100)));
+
+// Delivery-based progress — calculated after lane data is defined
+// (placeholder, updated below)
+let pctComplete = '0.0';
+
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const todayStr = `${dayNames[today.getDay()]}, ${months[today.getMonth()]} ${today.getDate()}, ${today.getFullYear()}`;
+
+// Next Friday
+const nextFriday = new Date(today);
+nextFriday.setDate(today.getDate() + ((5 - today.getDay() + 7) % 7 || 7));
+const nextFridayStr = `${months[nextFriday.getMonth()]} ${nextFriday.getDate()}, ${nextFriday.getFullYear()}`;
+
+// Populate header
+document.getElementById('headerDate').innerHTML = todayStr;
+document.getElementById('headerWeek').innerHTML = `Week <strong>${CURRENT_WEEK}</strong> of 30 &middot; ${currentPhase.name}`;
+document.getElementById('nextFridayDate').textContent = nextFridayStr;
+document.getElementById('footerDate').textContent = todayStr;
+
+// --- localStorage ---
+function loadEdits() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+}
+
+function saveEdit(key, value) {
+  const edits = loadEdits();
+  edits[key] = value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+  showSaved();
+}
+
+function e(key, defaultVal) {
+  const edits = loadEdits();
+  return edits[key] !== undefined ? edits[key] : defaultVal;
+}
+
+function ce(key, defaultVal) {
+  const val = e(key, defaultVal);
+  return `<span contenteditable="true" data-key="${key}" onblur="saveEdit('${key}', this.innerText)">${val}</span>`;
+}
+
+function showSaved() {
+  const el = document.getElementById('saveIndicator');
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+function resetAll() {
+  if (confirm('Reset all edits to defaults? This cannot be undone.')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
+
+// --- Workstream Data ---
+const lanes = [
+  {
+    id: 'platform',
+    title: 'Platform & Infrastructure',
+    color: 'var(--p3)',
+    rawColor: '#06b6d4',
+    status: 'ahead',
+    statusLabel: 'FRAMEWORK COMPLETE',
+    shipped: [
+      { text: 'Agent backend deployed to Railway', week: 6 },
+      { text: 'Next.js web app on Vercel', week: 6 },
+      { text: 'Authenticated chat proxy', week: 6 },
+      { text: 'Chat UX polished for demo', week: 6 },
+      { text: 'Gemini 2.5-flash transition', week: 6 },
+    ],
+    next: [
+      'Migrate to Google Cloud-hosted application (production)',
+      'Firebase Auth (production user provisioning)',
+      'Per-client GCP project isolation',
+      'Usage tracking instrumentation',
+      'Transition Railway account from Sean\u2019s trial to TH',
+    ],
+    blockerStatus: 'clear',
+    blockerText: 'May need cloud deployment expertise for GCP transition',
+  },
+  {
+    id: 'semantic',
+    title: 'Semantic Layer & Intelligence',
+    color: 'var(--p1)',
+    rawColor: '#3b82f6',
+    status: 'waiting',
+    statusLabel: 'IN PROGRESS',
+    shipped: [
+      { text: 'Agent config with 3 sub-agents (Search, URL, Vertex AI)', week: 6 },
+      { text: 'Data dictionary (50+ fields, DaaS v7)', week: 6 },
+      { text: '7 prompt improvements written and approved (not yet validated against live results)', week: 6 },
+      { text: 'CPT 99213 returns full tabular results (26 rows, 9 states, 5 carriers)', week: 6 },
+    ],
+    next: [
+      'Fix agent tool delegation (agent sometimes says "I cannot access data" instead of using Vertex AI Search)',
+      'Build tested demo query list \u2014 find 5\u201310 billing codes with sufficient data density in sample',
+      'Validate prompt improvements against live results',
+      'BigQuery MCP transition (fixes aggregation, filtering, full dataset access, v8 schema)',
+      'Map top 25 SME questions to BigQuery tables',
+    ],
+    blockerStatus: 'blocked',
+    blockerText: 'Agent tool delegation is inconsistent \u2014 sometimes fails to use data tools. Data sample is randomized 1M rows of v7; many codes return no results. BigQuery MCP transition is the single most impactful fix.',
+  },
+  {
+    id: 'feedback',
+    title: 'SME Feedback & Domain Input',
+    color: 'var(--p2)',
+    rawColor: '#8b5cf6',
+    status: 'waiting',
+    statusLabel: 'WAITING',
+    shipped: [
+      { text: 'Outreach emails sent to all 7 SMEs', week: 6 },
+      { text: 'Weekly Friday standup established', week: 6 },
+    ],
+    next: [
+      'Collect returning SME question submissions (pending post-processing completion)',
+      'Schedule Cheryl and Tanner meetings',
+      'Scrape Greg\'s Slack questions',
+      'Top 25 question prioritization',
+      'Blended P1.5: SMEs interact with prototype + grade responses concurrently with build',
+    ],
+    blockerStatus: 'blocked',
+    blockerText: 'Data team still in post-processing \u2014 SMEs will have capacity once that wraps. Ready to launch prototype for testing when window opens.',
+  },
+  {
+    id: 'business',
+    title: 'Business & Legal',
+    color: 'var(--p4)',
+    rawColor: '#10b981',
+    status: 'not-started',
+    statusLabel: 'NOT STARTED',
+    shipped: [],
+    next: [
+      'Data liability disclaimers \u2014 Bobby flagged discomfort with clients making business decisions from this data',
+      'Development cost pro forma (TH-959)',
+      'Enterprise AI pricing model research (TH-966)',
+      'Define trackable billing metrics (TH-967)',
+      'Legal review of third-party terms (TH-969)',
+      'Per-user cost controls feasibility study',
+    ],
+    blockerStatus: 'clear',
+    blockerText: 'No blockers \u2014 can run in parallel. Legal/liability framework needed before pilot.',
+  },
+];
+
+// --- Calculate delivery-based progress ---
+// Each lane's completion = shipped / (shipped + next)
+// Overall = weighted average across lanes (equal weight per lane)
+const laneCompletions = lanes.map(l => {
+  const shipped = l.shipped.length;
+  const total = shipped + l.next.length;
+  return total > 0 ? shipped / total : 0;
+});
+const deliveryPct = (laneCompletions.reduce((a, b) => a + b, 0) / lanes.length * 100);
+// Blend: 40% time-based + 60% delivery-based — delivery matters more
+pctComplete = Math.min(100, Math.max(0, (timePct * 0.4 + deliveryPct * 0.6))).toFixed(1);
+
+// Now populate the elements that depend on pctComplete
+document.getElementById('progressLabel').innerHTML = `Week <strong>${CURRENT_WEEK}</strong> of 30 &middot; <strong>${pctComplete}%</strong> delivered`;
+document.getElementById('progressFill').style.width = pctComplete + '%';
+
+document.getElementById('countdownBar').innerHTML = `
+  <div class="countdown-item">
+    <div class="countdown-number" style="color:${currentPhase.color}">${daysToPhaseEnd}</div>
+    <div class="countdown-label">Days left in ${currentPhase.id.toUpperCase()}</div>
+  </div>
+  <div class="countdown-sep"></div>
+  <div class="countdown-item">
+    <div class="countdown-number" style="color:var(--text)">${daysToPlanEnd}</div>
+    <div class="countdown-label">Days to launch</div>
+  </div>
+  <div class="countdown-sep"></div>
+  <div class="countdown-item">
+    <div class="countdown-number" style="color:var(--text-dim)">${weeksRemaining}</div>
+    <div class="countdown-label">Weeks remaining</div>
+  </div>
+  <div class="countdown-sep"></div>
+  <div class="countdown-item">
+    <div class="countdown-number" style="color:var(--green)">${pctComplete}%</div>
+    <div class="countdown-label">Delivered</div>
+  </div>
+  <div class="countdown-sep"></div>
+  <div class="countdown-item">
+    <div class="countdown-number" style="color:var(--green)">$0.30</div>
+    <div class="countdown-label">Peak day AI cost</div>
+  </div>
+`;
+
+// Render workstream lanes
+const grid = document.getElementById('workstreamGrid');
+
+lanes.forEach(lane => {
+  const shippedHTML = lane.shipped.length > 0
+    ? lane.shipped.map(s =>
+        `<li><span class="shipped-check">&#10003;</span><span>${ce(lane.id + '-shipped-' + lane.shipped.indexOf(s), s.text)}</span><span class="shipped-week">Wk ${s.week}</span></li>`
+      ).join('')
+    : '<li style="color:var(--text-muted);font-size:13px;padding:3px 0;">No items shipped yet</li>';
+
+  const nextHTML = lane.next.map((n, i) =>
+    `<li>${ce(lane.id + '-next-' + i, n)}</li>`
+  ).join('');
+
+  const blockerClass = lane.blockerStatus === 'clear' ? 'clear' : 'blocked';
+
+  grid.innerHTML += `
+    <div class="lane-card">
+      <div class="lane-accent" style="background:${lane.color}"></div>
+      <div class="lane-body">
+        <div class="lane-header">
+          <span class="lane-title">${lane.title}</span>
+          <span class="status-pill status-${lane.status}">${lane.statusLabel}</span>
+        </div>
+        <div class="lane-section-label">Shipped</div>
+        <ul class="shipped-list">${shippedHTML}</ul>
+        <div class="lane-section-label">Next</div>
+        <ul class="next-list">${nextHTML}</ul>
+        <div class="blocker-section">
+          <div class="blocker-label ${blockerClass}">
+            ${lane.blockerStatus === 'clear' ? '&#10003; Blockers' : '&#9888; Blockers'}
+          </div>
+          <div class="blocker-text ${blockerClass}">${ce(lane.id + '-blocker', lane.blockerText)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+});
+
+// --- Open Questions ---
+const questions = [
+  'Should we send the prototype link to SMEs as soon as post-processing wraps, or hold until we\u2019ve added more semantic layer refinements?',
+  'With P3 framework complete, should we start pilot client conversations (HFMA) earlier than Week 23?',
+  'The production platform will need to move to Google Cloud \u2014 do we need to bring in someone with GCP application deployment experience, or can the current team handle it?',
+  'How should we handle data liability disclaimers? Bobby has flagged discomfort with clients making business decisions (hiring, pricing) based on this data. Do we need legal counsel involved now or closer to pilot?',
+];
+
+const questionsGrid = document.getElementById('questionsGrid');
+questions.forEach((q, i) => {
+  questionsGrid.innerHTML += `
+    <div class="question-card">
+      <div class="question-num">${i + 1}</div>
+      <div class="question-text">${ce('question-' + i, q)}</div>
+    </div>
+  `;
+});
+
+// --- Commitments ---
+const commitments = [
+  { label: 'Option A', text: 'Fix agent tool delegation + build tested demo query list (5\u201310 billing codes confirmed working against sample data)' },
+  { label: 'Option B', text: 'BigQuery MCP feasibility evaluated and decision made (fixes aggregation, filtering, and full dataset access)' },
+  { label: 'Option C', text: 'Railway account transitioned to Third Horizon and cost pro forma delivered to Greg (TH-959)' },
+];
+
+const commitmentContainer = document.getElementById('commitmentOptions');
+const selectedCommitment = e('selected-commitment', null);
+
+commitments.forEach((c, i) => {
+  const isSelected = selectedCommitment === i;
+  const selDate = e('commitment-lock-date', '');
+
+  commitmentContainer.innerHTML += `
+    <div class="commitment-card ${isSelected ? 'selected' : ''}" data-index="${i}" onclick="selectCommitment(${i})">
+      <div class="commitment-option-label">
+        <div class="radio-dot"><div class="radio-dot-inner"></div></div>
+        ${c.label}
+      </div>
+      <div class="commitment-text">${ce('commitment-' + i, c.text)}</div>
+      <div class="locked-indicator">
+        &#9670; Locked${selDate ? ' \u2014 ' + selDate : ''}
+      </div>
+    </div>
+  `;
+});
+
+function selectCommitment(index) {
+  saveEdit('selected-commitment', index);
+  saveEdit('commitment-lock-date', todayStr);
+
+  document.querySelectorAll('.commitment-card').forEach((card, i) => {
+    card.classList.toggle('selected', i === index);
+    const indicator = card.querySelector('.locked-indicator');
+    if (i === index) {
+      indicator.innerHTML = `&#9670; Locked &mdash; ${todayStr}`;
+    }
+  });
+}
+
+// --- Past Commitments ---
+const pastCommitments = [
+  { week: 5, date: 'Mar 7', text: 'SME outreach sent, Friday standup cadence established, Gemini transition complete', status: 'met' },
+];
+
+const pastContainer = document.getElementById('pastCommitments');
+pastCommitments.forEach((pc, i) => {
+  pastContainer.innerHTML += `
+    <div class="past-commitment">
+      <span class="past-week">Wk ${pc.week} &middot; ${pc.date}</span>
+      <span class="past-text">${ce('past-' + i, pc.text)}</span>
+      <span class="past-status ${pc.status}">${pc.status === 'met' ? 'Met &#10003;' : pc.status === 'missed' ? 'Missed' : 'Partial'}</span>
+    </div>
+  `;
+});
+
+function exportPDF() {
+  // Build a plain markdown-style document from current data
+  let md = `<h1>ODIN / Muninn — Steering Dashboard</h1>`;
+  md += `<p>${todayStr} · Week ${CURRENT_WEEK} of 30 · ${currentPhase.name} · ${pctComplete}% delivered · Peak day AI cost: $0.30</p><hr>`;
+
+  md += `<h2>Workstream Lanes</h2>`;
+  lanes.forEach(lane => {
+    md += `<h3>${lane.title} — ${lane.statusLabel}</h3>`;
+    if (lane.shipped.length > 0) {
+      md += `<p><strong>Shipped:</strong></p><ul>`;
+      lane.shipped.forEach(s => {
+        const text = e(lane.id + '-shipped-' + lane.shipped.indexOf(s), s.text);
+        md += `<li>${text} (Wk ${s.week})</li>`;
+      });
+      md += `</ul>`;
+    }
+    md += `<p><strong>Next:</strong></p><ul>`;
+    lane.next.forEach((n, i) => {
+      md += `<li>${e(lane.id + '-next-' + i, n)}</li>`;
+    });
+    md += `</ul>`;
+    md += `<p><strong>Blockers:</strong> ${e(lane.id + '-blocker', lane.blockerText)}</p>`;
+  });
+
+  md += `<hr><h2>Open Questions for David</h2><ol>`;
+  questions.forEach((q, i) => {
+    md += `<li>${e('question-' + i, q)}</li>`;
+  });
+  md += `</ol>`;
+
+  md += `<h2>Suggested Commitments — True by ${nextFridayStr}</h2><ul>`;
+  const sel = e('selected-commitment', null);
+  commitments.forEach((c, i) => {
+    const text = e('commitment-' + i, c.text);
+    const locked = sel === i ? ' ← LOCKED' : '';
+    md += `<li><strong>${c.label}:</strong> ${text}${locked}</li>`;
+  });
+  md += `</ul>`;
+
+  md += `<h2>Past Commitments</h2><ul>`;
+  pastCommitments.forEach((pc, i) => {
+    md += `<li><strong>Wk ${pc.week} (${pc.date}):</strong> ${e('past-' + i, pc.text)} — ${pc.status.toUpperCase()}</li>`;
+  });
+  md += `</ul>`;
+
+  md += `<hr><p style="color:#999">Project Muninn · Starset Analytics · ${todayStr}</p>`;
+
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>ODIN Steering Dashboard — ${todayStr}</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; font-size: 14px; line-height: 1.7; }
+      h1 { font-size: 22px; margin-bottom: 4px; }
+      h2 { font-size: 17px; margin-top: 28px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+      h3 { font-size: 14px; margin-top: 20px; margin-bottom: 4px; }
+      ul, ol { padding-left: 24px; }
+      li { margin-bottom: 4px; }
+      hr { border: none; border-top: 1px solid #ddd; margin: 24px 0; }
+      p { margin: 6px 0; }
+    </style></head><body>${md}</body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 300);
+}
+
+</script>
+</body>
+</html>

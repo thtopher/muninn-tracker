@@ -322,6 +322,18 @@
 
   footer { padding: 32px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 13px; }
 
+  /* Floating publish button */
+  .publish-btn {
+    position: fixed; bottom: 28px; right: 28px; z-index: 1000;
+    display: none; align-items: center;
+    padding: 10px 20px; border-radius: 10px;
+    background: var(--green); color: white;
+    font-size: 13px; font-weight: 600; font-family: inherit;
+    box-shadow: 0 4px 20px rgba(34,197,94,0.35);
+    pointer-events: none; transition: opacity 0.3s;
+  }
+  .publish-btn.visible { display: flex; }
+
   @media (max-width: 768px) {
     .header-top { flex-direction: column; }
     .header-meta { text-align: left; }
@@ -443,6 +455,8 @@
   <footer>
     <p>Project Muninn &middot; Starset Analytics &middot; <span id="footerDate"></span></p>
   </footer>
+
+  <div class="publish-btn" id="publishBtn">Saved</div>
 </div>
 
 <script>
@@ -526,24 +540,24 @@ const weeks = [
   { phase:'p0', week:4, date:'Feb 23', focus:'Sprint plan refinement and presentation prep',
     tasks:['Courtney reviews and updates estimated hours for all P1 tasks','SME outreach emails drafted for each individual SME','Topher converts working doc into PowerPoint deck','Cost estimates include HFMA subset and national data set scenarios'],
     gate:'Sprint deck complete. SME outreach ready. Sprint board ready for Jira migration.', status:'done' },
-  { phase:'p1', week:5, date:'Mar 2', focus:'Greenlight and launch', stage:'Stage 1: Collect',
-    tasks:['Full-team kickoff meeting ✓','Send SME outreach emails to Bobby, Andy, Chris K, Tanner, Cheryl, Jenna, Chris H','Begin Gemini transition from OpenAI (TH-923)','Migrate sprint board to Jira','Set up weekly Friday standup cadence'],
-    milestone:'The machine is in motion. The people who know what ODIN needs to answer have been asked, and the infrastructure to track and execute is live.',
-    why:'Everything downstream depends on SME input flowing in and Courtney being unblocked on Gemini. No questions = no semantic layer. No Gemini = no place to build it.',
-    minimum:'SME emails sent to all 7 SMEs. Friday standup confirmed with David. Jira migration started.',
-    target:'All of the above plus Jira board populated with P1 tickets and Gemini transition actively underway.', status:'active' },
-  { phase:'p1', week:6, date:'Mar 9', focus:'Question collection and Slack scraping',
-    tasks:['Collect returning SME question submissions','Schedule Cheryl and Tanner meetings','Scrape Greg\'s Slack questions (TH-931)','Follow up with non-responsive SMEs','Prepare development cost pro forma (TH-959)'],
-    milestone:'We have real questions from the people who know the data — the raw material that defines what ODIN will be able to answer.',
-    why:'The SME questions ARE the product definition. Without them, we\'re guessing what ODIN should do. Greg\'s Slack questions give us real-world prompt phrasing — how people actually ask for data.',
-    minimum:'At least 3 SMEs have responded (even partially). Slack scrape complete. Cost pro forma delivered.',
-    target:'5+ SMEs responded. Cheryl and Tanner meetings scheduled. Gemini transition on track for Wk 7.', status:'upcoming' },
-  { phase:'p1', week:7, date:'Mar 16', focus:'Question mapping begins', stage:'Stage 2: Build',
-    tasks:['Consolidate all collected questions from SMEs and Slack','Identify top 25 priority analytical questions','Begin mapping questions to BigQuery tables and columns','Cost estimation per query (scan size analysis)'],
-    milestone:'We know what ODIN needs to answer, and we\'ve started connecting those questions to actual data. The semantic layer goes from concept to engineering.',
-    why:'The questions define the product. The mapping makes it buildable. This is where Courtney can start seeing what\'s technically feasible.',
-    minimum:'Top 15 questions identified. Mapping started on first batch. Gemini transition complete or near-complete.',
-    target:'Top 25 identified. Mapping underway for all. Gemini done (TH-923).', status:'upcoming' },
+  { phase:'p1', week:5, date:'Mar 2', focus:'Greenlight + accelerated prototype build', stage:'Stage 1: Collect + Concurrent Build',
+    tasks:['Full-team kickoff meeting ✓','SME outreach emails sent to all 7 SMEs ✓','Gemini transition complete — agent running on Gemini 2.5-flash via Vertex AI (TH-923 DONE) ✓','Friday standup cadence established with David ✓','ACCELERATION: Agent backend built and deployed to Railway ✓','ACCELERATION: Next.js web app scaffolded with auth, deployed to Vercel ✓','ACCELERATION: Authenticated chat proxy connecting frontend to live agent ✓','ACCELERATION: Chat UX polished for demo readiness ✓'],
+    milestone:'The machine is not just in motion — it\'s running. SME outreach launched AND a working prototype deployed in the same week. Agent can query ~1M rows of real healthcare rate data through a browser.',
+    why:'Original plan treated Collect as a gate for Build. Instead, we built a working prototype concurrently so SMEs can react to something tangible rather than filling out forms in the abstract.',
+    minimum:'SME emails sent to all 7 SMEs ✓. Friday standup confirmed ✓. Gemini transition complete ✓.',
+    target:'All of the above PLUS working agent + web app deployed to production infrastructure ✓. Live at fledgling-muninn.vercel.app.', status:'done' },
+  { phase:'p1', week:6, date:'Mar 9', focus:'Agent intelligence + concurrent SME collection', stage:'Stage 1: Collect + Concurrent Build',
+    tasks:['Collect returning SME question submissions (ongoing)','Schedule Cheryl and Tanner meetings','Follow up with non-responsive SMEs','Prepare development cost pro forma (TH-959)','ACCELERATION: 7 prompt improvements developed (billing code normalization, confidence scoring, Medicare comparison, rate source transparency, provider taxonomy, MSA geography, methodology explanation)','ACCELERATION: Data dictionary created (50+ fields documented for DaaS v8 schema)','ACCELERATION: Most prompt improvements approved by Courtney'],
+    milestone:'The agent doesn\'t just return numbers — it returns contextualized, trustworthy analysis with quality controls a healthcare data analyst would expect. SME input is flowing in concurrently.',
+    why:'Building the agent\'s analytical intelligence in parallel with SME collection means we can test and refine with real questions as they arrive, rather than waiting to batch everything.',
+    minimum:'At least 3 SMEs have responded (even partially). Agent prompt improvements drafted and reviewed.',
+    target:'5+ SMEs responded. Cheryl and Tanner meetings scheduled. Agent intelligence substantially enhanced.', status:'active' },
+  { phase:'p1', week:7, date:'Mar 16', focus:'Question mapping + prototype refinement', stage:'Stage 2: Build',
+    tasks:['Consolidate all collected questions from SMEs and Slack','Identify top 25 priority analytical questions','Map questions to BigQuery tables and columns (partially started via data dictionary)','Cost estimation per query (scan size analysis)','Test SME questions against live prototype for immediate feedback','Scrape Greg\'s Slack questions (TH-931)'],
+    milestone:'We know what ODIN needs to answer, and we can test questions against the working prototype in real time. Mapping is no longer abstract — it\'s verifiable.',
+    why:'With a working prototype, question mapping becomes an interactive process: map a question, test it, see if the answer is right. This is faster and more accurate than mapping in a spreadsheet.',
+    minimum:'Top 15 questions identified. Mapping started on first batch. Slack scrape complete.',
+    target:'Top 25 identified. Mapping underway for all. Questions tested against live prototype.', status:'upcoming' },
   { phase:'p1', week:8, date:'Mar 23', focus:'Table mapping and semantic layer design',
     tasks:['Complete question-to-table mapping for all 25 priority questions','Begin semantic layer spec: subset table structures per domain','Document semantic layer spec template (TH-963)','Identify gaps — questions that don\'t map cleanly'],
     milestone:'Every priority question is mapped to specific tables and columns. We know what\'s buildable and what has gaps.',
@@ -551,17 +565,17 @@ const weeks = [
     minimum:'20+ questions fully mapped. Spec template drafted. Major gaps documented.',
     target:'All 25 mapped. First domain spec complete. No surprise gaps.', status:'upcoming' },
   { phase:'p1', week:9, date:'Mar 30', focus:'Semantic view construction begins',
-    tasks:['Build first semantic views in Vertex AI / Gemini','Begin training rules documentation','Incorporate client deliverables as training context (TH-965)'],
+    tasks:['Build first semantic views in Vertex AI / Gemini','Begin training rules documentation','Incorporate client deliverables as training context (TH-965)','Test views against live prototype (already deployed)','Evaluate BigQuery MCP transition from Vertex AI Search'],
     milestone:'ODIN can answer its first real questions against actual data. The semantic layer is no longer a plan — it\'s working software.',
     why:'This is proof of concept. If the first 2–3 views work — if Gemini can take a natural language question, route it through the semantic layer, and return a correct answer — then the pattern is proven.',
     minimum:'2 semantic views built and returning reasonable answers. Training rules started.',
     target:'3+ views queryable. Training rules underway. Client deliverables identified for ingestion.', status:'upcoming' },
-  { phase:'p1', week:10, date:'Apr 6', focus:'Semantic view buildout continues',
-    tasks:['Continue building semantic views across remaining domains','Begin test front-end design (TH-942) — Courtney + Sean','Test early views with simple prompts for accuracy'],
-    milestone:'The semantic layer covers most priority questions, and we\'re starting to see how it performs with real natural language prompts.',
-    why:'Prompt testing reveals whether the semantic layer actually works for how people ask questions. A view might be technically correct but fail because Gemini misinterprets the phrasing.',
-    minimum:'6+ views built. Test front-end approach decided. At least one end-to-end prompt test working.',
-    target:'Majority of views built. Prompt tests showing reasonable accuracy. Sean engaged on front-end.', status:'upcoming' },
+  { phase:'p1', week:10, date:'Apr 6', focus:'Semantic view buildout + live testing',
+    tasks:['Continue building semantic views across remaining domains','Test views with real prompts via deployed web app (TH-942 DONE — pulled to Wk 5)','Prompt stress testing with varied phrasings','Begin BigQuery MCP migration if feasibility confirmed'],
+    milestone:'The semantic layer covers most priority questions, and we\'re testing against the live prototype — not a design doc.',
+    why:'With the test frontend already deployed (pulled forward from Wk 10 to Wk 5), this week focuses purely on semantic layer quality and prompt accuracy.',
+    minimum:'6+ views built. End-to-end prompt tests showing reasonable accuracy.',
+    target:'Majority of views built. Prompt tests documented. BigQuery MCP path decided.', status:'upcoming' },
   { phase:'p1', week:11, date:'Apr 13', focus:'Test front-end and gap analysis', stage:'Stage 3: Validate',
     tasks:['Deploy test front-end for internal validation','SMEs begin interacting with semantic views','Identify view gaps — wrong or missing answers','Begin recollection from SMEs if critical gaps found','Document session architecture (TH-964)'],
     milestone:'Real users are asking ODIN real questions for the first time. We can see what works and what doesn\'t — not in theory, but in practice.',
@@ -578,9 +592,9 @@ const weeks = [
   { phase:'p2', week:14, date:'May 4', focus:'First structured grading cycle', tasks:['Each tester submits 5-10 prompts and grades responses','Iterate on views from feedback','Test comparative analytics','Document failure modes'], gate:'First grading cycle complete. Failure modes cataloged. Iteration priorities set.', status:'upcoming' },
   { phase:'p2', week:15, date:'May 11', focus:'Iteration and second grading cycle', tasks:['Implement fixes from first cycle','Run second grading cycle','Measure improvement between cycles','Define acceptance criteria'], gate:'Second grading cycle complete. Measurable improvement. Acceptance criteria drafted.', status:'upcoming' },
   { phase:'p2', week:16, date:'May 18', focus:'P2 closeout and P3 readiness', tasks:['Lock semantic layer definitions','Document known limitations','Assess production readiness','Confirm Sean for P3'], gate:'Semantic layer frozen. Acceptance criteria met. Sean confirmed for P3. P2 DONE.', status:'upcoming' },
-  { phase:'p3', week:17, date:'May 25', focus:'Web app architecture and scaffolding', tasks:['Define web app architecture','Set up project scaffolding','Design auth approach','Define per-client provisioning'], gate:'Web app repo created. Architecture decided. Auth approach confirmed.', status:'upcoming' },
-  { phase:'p3', week:18, date:'Jun 1', focus:'Authentication and core infrastructure', tasks:['Implement user auth','Build per-client GCP provisioning','Set up Gemini API integration','Begin usage tracking'], gate:'Users can log in. One client project provisioned. API integration functional.', status:'upcoming' },
-  { phase:'p3', week:19, date:'Jun 8', focus:'Core UI and query interface', tasks:['Build primary query/chat interface','Implement source attribution display','Connect front-end to semantic layer','Begin per-client data partitioning'], gate:'Users can ask questions through web UI and get responses. Source labels visible.', status:'upcoming' },
+  { phase:'p3', week:17, date:'May 25', focus:'Platform hardening (scaffolding + auth pulled to Wk 5)', tasks:['DONE IN WK 5: Web app scaffolded (Next.js) and deployed to Vercel ✓','DONE IN WK 5: Demo auth implemented (password-based sessions) ✓','DONE IN WK 5: Chat proxy + Gemini API integration functional ✓','Upgrade to Firebase Auth for production user provisioning','Define per-client GCP provisioning model','Begin usage tracking instrumentation'], gate:'Firebase Auth live. Per-client provisioning designed. Usage tracking started.', status:'upcoming' },
+  { phase:'p3', week:18, date:'Jun 1', focus:'Per-client isolation and cost controls', tasks:['Build per-client GCP project provisioning','Implement per-client cost caps and lockout','Per-user usage tracking','Begin billing instrumentation'], gate:'One client project provisioned. Cost caps functional. Usage data flowing.', status:'upcoming' },
+  { phase:'p3', week:19, date:'Jun 8', focus:'Production UI polish and data partitioning', tasks:['Production-grade UI refinements','Source attribution display enhancements','Per-client data partitioning','Closed-world mode option'], gate:'Users can ask questions through polished web UI. Source labels visible. Per-client isolation working.', status:'upcoming' },
   { phase:'p3', week:20, date:'Jun 15', focus:'Client customization and cost controls', tasks:['Per-client cost caps and lockout','Per-user usage tracking','Client-specific UI customization','Closed-world mode option'], gate:'Per-client cost controls functional. One deployment with closed-world mode.', status:'upcoming' },
   { phase:'p3', week:21, date:'Jun 22', focus:'Integration testing and security', tasks:['End-to-end integration testing','Security review','Performance testing','Usage billing dashboard'], gate:'Integration tests passing. No critical security issues. Billing data visible.', status:'upcoming' },
   { phase:'p3', week:22, date:'Jun 29', focus:'P3 closeout and pilot readiness', tasks:['Fix integration/security issues','Internal team dogfooding','Document deployment playbook','Finalize pricing model'], gate:'Platform on production. Internal team using daily. Deployment playbook. Pricing drafted. P3 DONE.', status:'upcoming' },
@@ -604,9 +618,9 @@ const gates = [
 
 const risks = [
   { risk:'SME question submissions delayed', impact:'P1 Wk 6–7 blocked', mitigation:'Follow up aggressively Wk 6. Lower threshold to proceed (15 questions vs. 25).' },
-  { risk:'Gemini transition takes longer than expected', impact:'P1 Build phase delayed', mitigation:'Must complete by Wk 7. If slipping, escalate immediately.' },
+  { risk:'Gemini transition takes longer than expected', impact:'P1 Build phase delayed', mitigation:'RESOLVED — Gemini transition completed in Wk 5. Agent running on Gemini 2.5-flash.' },
   { risk:'Capacity — Courtney stretched thin', impact:'All phases', mitigation:'Weekly Friday standups surface this early. David committed to remediating quickly.' },
-  { risk:'Sean unavailable for P3', impact:'P3 web app blocked', mitigation:'Confirm availability by P2 closeout (Wk 16). Identify backup if needed.' },
+  { risk:'Sean unavailable for P3', impact:'P3 web app blocked', mitigation:'MITIGATED — Web app scaffolding + auth + deployment completed in Wk 5 by Topher + Courtney. Sean\'s P3 scope reduced to hardening and per-client features.' },
   { risk:'Pilot feedback requires major rework', impact:'P4 timeline slips', mitigation:'P2 grading cycles designed to catch this before P3.' },
   { risk:'Third-party terms unresolved', impact:'Client contracts delayed', mitigation:'Initiate legal review Wk 23; resolution needed by Wk 28.' },
   { risk:'National data set cost exceeds estimates', impact:'Pricing model breaks', mitigation:'P1 cost validation (Wk 12) and pilot monitoring (Wk 25–27) are checkpoints.' },
@@ -622,7 +636,7 @@ function saveEdit(key, value) {
   const edits = loadEdits();
   edits[key] = value;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
-  flashSave();
+  showSaved();
 }
 
 function resetAll() {
@@ -633,11 +647,16 @@ function resetAll() {
 }
 
 let saveTimeout;
-function flashSave() {
+function showSaved() {
+  const btn = document.getElementById('publishBtn');
+  btn.classList.add('visible', 'done');
+  btn.textContent = 'Saved';
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => btn.classList.remove('visible'), 2000);
+
   const el = document.getElementById('saveIndicator');
   el.classList.add('show');
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(() => el.classList.remove('show'), 2000);
+  setTimeout(() => el.classList.remove('show'), 2000);
 }
 
 function e(key, defaultVal) {
