@@ -647,18 +647,21 @@ const lanes = [
     shipped: [
       { text: 'Agent config with 3 sub-agents (Search, URL, Vertex AI)', week: 6 },
       { text: 'Data dictionary (50+ fields, DaaS v7)', week: 6 },
-      { text: '7 prompt improvements written and approved (not yet validated against live results)', week: 6 },
+      { text: '7 prompt improvements written and approved', week: 6 },
       { text: 'CPT 99213 returns full tabular results (26 rows, 9 states, 5 carriers)', week: 6 },
+      { text: 'CEO live demo completed \u2014 confidence indicators praised', week: 7 },
+      { text: 'Data expansion plan agreed: 5M rows, IL + VA, v8', week: 7 },
     ],
     next: [
-      'Fix agent tool delegation (agent sometimes says "I cannot access data" instead of using Vertex AI Search)',
-      'Build tested demo query list \u2014 find 5\u201310 billing codes with sufficient data density in sample',
-      'Validate prompt improvements against live results',
-      'BigQuery MCP transition (fixes aggregation, filtering, full dataset access, v8 schema)',
-      'Map top 25 SME questions to BigQuery tables',
+      'Load 5M-row V8 dataset (Illinois + Virginia) into data store',
+      'Fix agent tool delegation (inconsistent use of Vertex AI Search)',
+      'Cost benchmarking at 1M/5M/10M row levels for business model',
+      'Rate book feasibility \u2014 full BH rate book for smallest market',
+      'BigQuery MCP transition (fixes aggregation, filtering, full dataset access)',
+      'Cross-model evaluation (Vertex + Anthropic integration)',
     ],
     blockerStatus: 'blocked',
-    blockerText: 'Agent tool delegation is inconsistent \u2014 sometimes fails to use data tools. Data sample is randomized 1M rows of v7; many codes return no results. BigQuery MCP transition is the single most impactful fix.',
+    blockerText: 'Agent tool delegation still inconsistent. Data expansion from 1M to 5M rows in progress \u2014 will resolve coverage gaps. V8 post-processing nearly complete.',
   },
   {
     id: 'feedback',
@@ -672,14 +675,15 @@ const lanes = [
       { text: 'Weekly Friday standup established', week: 6 },
     ],
     next: [
-      'Collect returning SME question submissions (pending post-processing completion)',
+      'Round up data team during 30-day post-processing window',
+      'Share prototype with SMEs for hands-on testing',
       'Schedule Cheryl and Tanner meetings',
       'Scrape Greg\'s Slack questions',
       'Top 25 question prioritization',
-      'Blended P1.5: SMEs interact with prototype + grade responses concurrently with build',
+      'Blended P1.5: SMEs interact with prototype + grade responses concurrently',
     ],
     blockerStatus: 'blocked',
-    blockerText: 'Data team still in post-processing \u2014 SMEs will have capacity once that wraps. Ready to launch prototype for testing when window opens.',
+    blockerText: 'No SME responses yet. V8 post-processing nearly complete \u2014 30-day window opening for data team engagement. Ready to launch prototype testing when expanded dataset is loaded.',
   },
   {
     id: 'business',
@@ -690,15 +694,15 @@ const lanes = [
     statusLabel: 'NOT STARTED',
     shipped: [],
     next: [
+      'Cost benchmarking analysis (1M/5M/10M rows) \u2014 feeds TH-959 and TH-966',
       'Data liability disclaimers \u2014 Bobby flagged discomfort with clients making business decisions from this data',
       'Development cost pro forma (TH-959)',
       'Enterprise AI pricing model research (TH-966)',
       'Define trackable billing metrics (TH-967)',
       'Legal review of third-party terms (TH-969)',
-      'Per-user cost controls feasibility study',
     ],
     blockerStatus: 'clear',
-    blockerText: 'No blockers \u2014 can run in parallel. Legal/liability framework needed before pilot.',
+    blockerText: 'No blockers \u2014 can run in parallel. Cost benchmarking now prioritized by David to inform business model.',
   },
 ];
 
@@ -786,10 +790,10 @@ lanes.forEach(lane => {
 
 // --- Open Questions ---
 const questions = [
-  'Should we send the prototype link to SMEs as soon as post-processing wraps, or hold until we\u2019ve added more semantic layer refinements?',
-  'With P3 framework complete, should we start pilot client conversations (HFMA) earlier than Week 23?',
-  'The production platform will need to move to Google Cloud \u2014 do we need to bring in someone with GCP application deployment experience, or can the current team handle it?',
-  'How should we handle data liability disclaimers? Bobby has flagged discomfort with clients making business decisions (hiring, pricing) based on this data. Do we need legal counsel involved now or closer to pilot?',
+  'Rate book use case: Chris to extract a sample BH rate book for Virginia \u2014 how many records does a full rate book require, and is this a better first product than open-ended Q&A?',
+  'Cross-model architecture: David asked if Vertex can wire API calls with Anthropic. Should we evaluate this now or defer until after BigQuery MCP transition?',
+  'Cost benchmarking: With three data points (1M/5M/10M), what per-inquiry price target makes the business model work? How does this inform the pricing model (TH-966)?',
+  'SME engagement: With the 30-day post-processing window opening, should we prioritize sharing the prototype or wait until the 5M-row dataset is loaded?',
 ];
 
 const questionsGrid = document.getElementById('questionsGrid');
@@ -804,9 +808,9 @@ questions.forEach((q, i) => {
 
 // --- Commitments ---
 const commitments = [
-  { label: 'Option A', text: 'Fix agent tool delegation + build tested demo query list (5\u201310 billing codes confirmed working against sample data)' },
-  { label: 'Option B', text: 'BigQuery MCP feasibility evaluated and decision made (fixes aggregation, filtering, and full dataset access)' },
-  { label: 'Option C', text: 'Railway account transitioned to Third Horizon and cost pro forma delivered to Greg (TH-959)' },
+  { label: 'Option A', text: 'Dev environment with 5M-row V8 dataset (IL + VA) loaded and available for testing' },
+  { label: 'Option B', text: 'Cost-per-inquiry baseline documented at 1M rows + data team SME meetings scheduled during 30-day window' },
+  { label: 'Option C', text: 'Rate book feasibility assessed \u2014 Chris provides Virginia BH extract, row count estimated, and agent tested against it' },
 ];
 
 const commitmentContainer = document.getElementById('commitmentOptions');
@@ -845,6 +849,7 @@ function selectCommitment(index) {
 
 // --- Past Commitments ---
 const pastCommitments = [
+  { week: 6, date: 'Mar 13', text: 'CEO live demo of prototype, data expansion plan agreed (5M rows, IL + VA, v8), cost benchmarking prioritized', status: 'met' },
   { week: 5, date: 'Mar 7', text: 'SME outreach sent, Friday standup cadence established, Gemini transition complete', status: 'met' },
 ];
 
