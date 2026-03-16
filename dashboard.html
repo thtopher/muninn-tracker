@@ -808,9 +808,9 @@ questions.forEach((q, i) => {
 
 // --- Commitments ---
 const commitments = [
-  { label: 'Option A', text: 'Dev environment with 5M-row V8 dataset (IL + VA) loaded and available for testing' },
-  { label: 'Option B', text: 'Cost-per-inquiry baseline documented at 1M rows + data team SME meetings scheduled during 30-day window' },
-  { label: 'Option C', text: 'Rate book feasibility assessed \u2014 Chris provides Virginia BH extract, row count estimated, and agent tested against it' },
+  { label: 'Committed', text: 'Dev environment with 5M-row V8 dataset (IL + VA) loaded and available for testing \u2014 explicitly agreed by David' },
+  { label: 'Committed', text: 'Begin rounding up data team for SME engagement during the 30-day post-processing window \u2014 explicitly agreed by David' },
+  { label: 'Stretch', text: 'Cost-per-inquiry baseline documented at 1M rows (discussed but not formally committed as "true by Friday" \u2014 alignment was cut short)' },
 ];
 
 const commitmentContainer = document.getElementById('commitmentOptions');
@@ -849,7 +849,8 @@ function selectCommitment(index) {
 
 // --- Past Commitments ---
 const pastCommitments = [
-  { week: 6, date: 'Mar 13', text: 'CEO live demo of prototype, data expansion plan agreed (5M rows, IL + VA, v8), cost benchmarking prioritized', status: 'met' },
+  { week: 7, date: 'Mar 13', text: 'True by Friday: (1) Dev environment with larger tables (5M V8, IL + VA) available for testing, (2) Begin rounding up data team during 30-day post-processing window. Note: alignment cut short \u2014 cost benchmarking discussed but not formally committed.', status: 'partial' },
+  { week: 6, date: 'Mar 13', text: 'CEO live demo of prototype completed, data expansion plan agreed, rate book use case surfaced (meeting outcomes, not pre-set commitments)', status: 'met' },
   { week: 5, date: 'Mar 7', text: 'SME outreach sent, Friday standup cadence established, Gemini transition complete', status: 'met' },
 ];
 

@@ -33,7 +33,7 @@ Based on the demo, the following data plan was agreed upon:
 | **Purpose** | Proof of concept | Demo-ready with predictable coverage |
 
 - **Illinois** was a direct request from David ("let me play a CEO card — do Chicago")
-- **Virginia** was a prior recommendation from Chris Hart
+- **Virginia** was a prior recommendation from Chris Hart (though Courtney noted some confusion between data versions and state selections during the call — may need confirmation)
 - Courtney confirmed V8 post-processing is nearly complete and will align with the data expansion
 
 ### Cost Benchmarking Priority
@@ -112,7 +112,11 @@ Based on the Mar 13 discussion, the agreed commitments for this week:
 
 1. **Dev environment with larger tables** — 5M-row V8 dataset loaded with Illinois and Virginia coverage, available for testing
 2. **Begin rounding up data team** — Leverage the 30-day post-processing window to schedule SME interactions with the prototype
-3. **Cost analysis at 1M level** — Document per-inquiry cost baseline against current dataset to establish first of three benchmarking data points
+
+**Also discussed (not explicitly committed as "true by Friday"):**
+- **Cost benchmarking** — David requested a three-tier cost analysis (1M/5M/10M rows) to inform the business model. This was discussed earlier in the meeting but was not part of the formal "true by Friday" alignment.
+
+*Note: The alignment was cut short — Topher had to leave unexpectedly. David asked "what else needs to be true for next week?" but the conversation ended before additional items could be agreed upon.*
 
 ---
 
