@@ -628,14 +628,16 @@ const lanes = [
       { text: 'Gemini 2.5-flash transition', week: 6 },
     ],
     next: [
+      'Add login credentials to MMA site (email/password, like ForeSee) \u2014 Topher, show by Tuesday',
+      'Evaluate Clerk for auth + billing across TH projects (goal: prove subscription billing by end of April)',
+      'Wire MMA site as relationship hub \u2014 contract, budget, baseball cards, Odin (David vision)',
       'Migrate to Google Cloud-hosted application (production)',
-      'Firebase Auth (production user provisioning)',
       'Per-client GCP project isolation',
       'Usage tracking instrumentation',
       'Transition Railway account from Sean\u2019s trial to TH',
     ],
     blockerStatus: 'clear',
-    blockerText: 'May need cloud deployment expertise for GCP transition',
+    blockerText: 'No blockers. MMA site auth and Clerk evaluation are new assignments from David. Railway account transition still pending.',
   },
   {
     id: 'semantic',
@@ -647,18 +649,25 @@ const lanes = [
     shipped: [
       { text: 'Agent config with 3 sub-agents (Search, URL, Vertex AI)', week: 6 },
       { text: 'Data dictionary (50+ fields, DaaS v7)', week: 6 },
-      { text: '7 prompt improvements written and approved (not yet validated against live results)', week: 6 },
+      { text: '7 prompt improvements written and approved', week: 6 },
       { text: 'CPT 99213 returns full tabular results (26 rows, 9 states, 5 carriers)', week: 6 },
+      { text: 'CEO live demo completed \u2014 confidence indicators praised', week: 7 },
+      { text: 'Data expansion plan agreed: 5M rows, IL + VA, v8', week: 7 },
+      { text: 'BigQuery MCP transition complete \u2014 queries now run directly against BigQuery (not vector DB)', week: 8 },
+      { text: 'Query cost visibility \u2014 every query logged as BigQuery job with exact cost per inquiry', week: 8 },
+      { text: 'SQL generation transparency \u2014 can see exact SQL Gemini produces for each question', week: 8 },
+      { text: 'V8 dataset posted and available for download', week: 8 },
     ],
     next: [
-      'Fix agent tool delegation (agent sometimes says "I cannot access data" instead of using Vertex AI Search)',
-      'Build tested demo query list \u2014 find 5\u201310 billing codes with sufficient data density in sample',
-      'Validate prompt improvements against live results',
-      'BigQuery MCP transition (fixes aggregation, filtering, full dataset access, v8 schema)',
-      'Map top 25 SME questions to BigQuery tables',
+      'Load 5M-row V8 dataset (Illinois + Virginia) into BigQuery \u2014 V8 available, target Monday',
+      'Validate SQL generation accuracy with analysts (confidence check on Gemini\u2019s query interpretation)',
+      'Cost benchmarking at 1M/5M/10M row levels for business model',
+      'Rate book feasibility \u2014 full BH rate book for smallest market',
+      'Lineage report integration \u2014 explore connecting Vertex to lineage reports for MMA (Courtney + Chris Hart)',
+      'Cross-model evaluation (Vertex + Anthropic integration)',
     ],
-    blockerStatus: 'blocked',
-    blockerText: 'Agent tool delegation is inconsistent \u2014 sometimes fails to use data tools. Data sample is randomized 1M rows of v7; many codes return no results. BigQuery MCP transition is the single most impactful fix.',
+    blockerStatus: 'clear',
+    blockerText: 'BigQuery transition resolved \u2014 major milestone. V8 available for download Monday. 5M-row expansion can proceed immediately.',
   },
   {
     id: 'feedback',
@@ -670,35 +679,42 @@ const lanes = [
     shipped: [
       { text: 'Outreach emails sent to all 7 SMEs', week: 6 },
       { text: 'Weekly Friday standup established', week: 6 },
+      { text: 'Prototype presented in data services meeting \u2014 a few questions received', week: 8 },
+      { text: 'Jira timeline/Gantt chart created with task dependencies and sprint view', week: 8 },
+      { text: 'Cheryl invited to Friday standups (David directive \u2014 70% of substance will come from her)', week: 8 },
     ],
     next: [
-      'Collect returning SME question submissions (pending post-processing completion)',
-      'Schedule Cheryl and Tanner meetings',
+      'Share prototype link with SMEs \u2014 name-based login for usage tracking (replaces cold question solicitation)',
+      'Prioritize Cheryl engagement \u2014 schedule time, request question library (David: top of the list)',
+      'Greg + Andy for MHPI insight once post-processing wraps (~Tuesday/Wednesday)',
       'Scrape Greg\'s Slack questions',
       'Top 25 question prioritization',
-      'Blended P1.5: SMEs interact with prototype + grade responses concurrently with build',
+      'Blended P1.5: SMEs interact with prototype + grade responses concurrently',
     ],
-    blockerStatus: 'blocked',
-    blockerText: 'Data team still in post-processing \u2014 SMEs will have capacity once that wraps. Ready to launch prototype for testing when window opens.',
+    blockerStatus: 'waiting',
+    blockerText: 'Data team in post-processing \u2014 Andy has family obligations, Bobby in New Orleans. Available ~Tuesday/Wednesday. Strategy shifted: send prototype for hands-on interaction instead of cold question requests.',
   },
   {
     id: 'business',
     title: 'Business & Legal',
     color: 'var(--p4)',
     rawColor: '#10b981',
-    status: 'not-started',
-    statusLabel: 'NOT STARTED',
-    shipped: [],
+    status: 'waiting',
+    statusLabel: 'IN PROGRESS',
+    shipped: [
+      { text: 'Per-query cost visibility established in BigQuery job logs \u2014 direct link between questions and cost', week: 8 },
+    ],
     next: [
+      'Cost benchmarking analysis (1M/5M/10M rows) \u2014 three data points now achievable with BigQuery job logs',
+      'Prove subscription billing on a live site by end of April (Clerk evaluation \u2014 3.6% + $0.30/transaction)',
       'Data liability disclaimers \u2014 Bobby flagged discomfort with clients making business decisions from this data',
       'Development cost pro forma (TH-959)',
       'Enterprise AI pricing model research (TH-966)',
       'Define trackable billing metrics (TH-967)',
       'Legal review of third-party terms (TH-969)',
-      'Per-user cost controls feasibility study',
     ],
     blockerStatus: 'clear',
-    blockerText: 'No blockers \u2014 can run in parallel. Legal/liability framework needed before pilot.',
+    blockerText: 'No blockers. Cost visibility now live in BigQuery \u2014 enables real cost benchmarking as data scales. Clerk evaluation underway for billing infrastructure.',
   },
 ];
 
@@ -786,10 +802,10 @@ lanes.forEach(lane => {
 
 // --- Open Questions ---
 const questions = [
-  'Should we send the prototype link to SMEs as soon as post-processing wraps, or hold until we\u2019ve added more semantic layer refinements?',
-  'With P3 framework complete, should we start pilot client conversations (HFMA) earlier than Week 23?',
-  'The production platform will need to move to Google Cloud \u2014 do we need to bring in someone with GCP application deployment experience, or can the current team handle it?',
-  'How should we handle data liability disclaimers? Bobby has flagged discomfort with clients making business decisions (hiring, pricing) based on this data. Do we need legal counsel involved now or closer to pilot?',
+  'Lineage report integration: David wants Vertex connected to lineage reports so MMA can query them through ODIN \u2014 what data is most valuable, and how complex is this connection? (Courtney + Chris Hart evaluating)',
+  'MMA site scope: David envisions it as a full relationship hub (contract, budget, baseball cards, Odin, lineage). How much to build now vs. phase in later?',
+  'Clerk vs Stripe: Is Clerk the right choice for auth + billing across TH projects? Need to evaluate pricing (3.6% + $0.30/txn), security, and integration complexity.',
+  'SQL accuracy validation: Gemini\u2019s SQL generation is now visible \u2014 should we have analysts formally verify query interpretations before sharing prototype more broadly?',
 ];
 
 const questionsGrid = document.getElementById('questionsGrid');
@@ -804,9 +820,10 @@ questions.forEach((q, i) => {
 
 // --- Commitments ---
 const commitments = [
-  { label: 'Option A', text: 'Fix agent tool delegation + build tested demo query list (5\u201310 billing codes confirmed working against sample data)' },
-  { label: 'Option B', text: 'BigQuery MCP feasibility evaluated and decision made (fixes aggregation, filtering, and full dataset access)' },
-  { label: 'Option C', text: 'Railway account transitioned to Third Horizon and cost pro forma delivered to Greg (TH-959)' },
+  { label: 'Committed', text: 'MMA site behind login credentials (email/password) \u2014 Topher committed to show by Tuesday, David assigned explicitly' },
+  { label: 'Committed', text: 'Prototype link shared with SMEs (Cheryl first) with name-based usage tracking \u2014 strategy agreed in meeting' },
+  { label: 'Committed', text: '5M-row V8 dataset loaded into BigQuery (V8 posted, pull Monday) \u2014 David confirmed V8 is ready' },
+  { label: 'Stretch', text: 'Clerk evaluation started \u2014 auth + billing proof of concept (David: prove subscription billing by end of April)' },
 ];
 
 const commitmentContainer = document.getElementById('commitmentOptions');
@@ -845,6 +862,9 @@ function selectCommitment(index) {
 
 // --- Past Commitments ---
 const pastCommitments = [
+  { week: 8, date: 'Mar 20', text: 'BigQuery MCP transition complete \u2014 queries now run against real BigQuery with cost visibility and SQL transparency. V8 posted. Prototype presented in data services meeting. Jira timeline created. SME strategy shifted to prototype-first with name tracking.', status: 'met' },
+  { week: 7, date: 'Mar 13', text: 'True by Friday: (1) Dev environment with larger tables (5M V8, IL + VA) available for testing \u2014 V8 now posted, load pending Monday. (2) Begin rounding up data team \u2014 Courtney brought up in data services meeting, Cheryl invited. Cost benchmarking stretch: now achievable via BigQuery job logs.', status: 'partial' },
+  { week: 6, date: 'Mar 13', text: 'CEO live demo of prototype completed, data expansion plan agreed, rate book use case surfaced (meeting outcomes, not pre-set commitments)', status: 'met' },
   { week: 5, date: 'Mar 7', text: 'SME outreach sent, Friday standup cadence established, Gemini transition complete', status: 'met' },
 ];
 
