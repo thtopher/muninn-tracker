@@ -211,6 +211,45 @@
     white-space: nowrap;
   }
 
+  /* Shipped archive (collapsible) */
+  .shipped-archive {
+    margin-top: 8px;
+  }
+
+  .shipped-archive-toggle {
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+  }
+
+  .shipped-archive-toggle::-webkit-details-marker { display: none; }
+
+  .shipped-archive-toggle::before {
+    content: '\25B6';
+    font-size: 9px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .shipped-archive[open] > .shipped-archive-toggle::before {
+    transform: rotate(90deg);
+  }
+
+  .shipped-archive-toggle:hover {
+    color: var(--text-dim);
+  }
+
+  .shipped-archive .shipped-list {
+    margin-top: 4px;
+    opacity: 0.7;
+  }
+
   .next-list li {
     padding: 3px 0 3px 16px; font-size: 13px; color: var(--text-dim);
     position: relative; line-height: 1.5;
@@ -628,23 +667,26 @@ const lanes = [
       { text: 'Gemini 2.5-flash transition', week: 6 },
     ],
     next: [
-      'Add login credentials to MMA site (email/password, like ForeSee) \u2014 Topher, show by Tuesday',
-      'Evaluate Clerk for auth + billing across TH projects (goal: prove subscription billing by end of April)',
+      'Change UI branding from \u201cChat with Muninn\u201d to \u201cChat with Odin\u201d',
+      'Build preliminary cost dashboard \u2014 per-query cost visibility UI',
+      'Wire up query logging \u2014 capture verbatim user questions (not just SQL)',
+      'Fork BH rate book repo from David\u2019s GitHub, take off fly.io (Spencer Case)',
+      'Add login credentials to MMA site (email/password, like ForeSee)',
+      'Evaluate Clerk for auth + billing across TH projects (prove subscription billing by end of April)',
       'Wire MMA site as relationship hub \u2014 contract, budget, baseball cards, Odin (David vision)',
       'Migrate to Google Cloud-hosted application (production)',
       'Per-client GCP project isolation',
-      'Usage tracking instrumentation',
       'Transition Railway account from Sean\u2019s trial to TH',
     ],
     blockerStatus: 'clear',
-    blockerText: 'No blockers. MMA site auth and Clerk evaluation are new assignments from David. Railway account transition still pending.',
+    blockerText: 'No blockers. Cost dashboard and query logging are new commitments. BH rate book fork pending Spencer Case.',
   },
   {
     id: 'semantic',
     title: 'Semantic Layer & Intelligence',
     color: 'var(--p1)',
     rawColor: '#3b82f6',
-    status: 'waiting',
+    status: 'on-track',
     statusLabel: 'IN PROGRESS',
     shipped: [
       { text: 'Agent config with 3 sub-agents (Search, URL, Vertex AI)', week: 6 },
@@ -657,64 +699,76 @@ const lanes = [
       { text: 'Query cost visibility \u2014 every query logged as BigQuery job with exact cost per inquiry', week: 8 },
       { text: 'SQL generation transparency \u2014 can see exact SQL Gemini produces for each question', week: 8 },
       { text: 'V8 dataset posted and available for download', week: 8 },
+      { text: 'Cheryl\u2019s first live prototype walkthrough \u2014 tested queries, confirmed sample limitations', week: 9 },
+      { text: 'Data expansion scope widened: VA + Utah + Indiana + Chicago MSA \u2014 David approved 10M+ start', week: 9 },
     ],
     next: [
-      'Load 5M-row V8 dataset (Illinois + Virginia) into BigQuery \u2014 V8 available, target Monday',
-      'Validate SQL generation accuracy with analysts (confidence check on Gemini\u2019s query interpretation)',
-      'Cost benchmarking at 1M/5M/10M row levels for business model',
-      'Rate book feasibility \u2014 full BH rate book for smallest market',
-      'Lineage report integration \u2014 explore connecting Vertex to lineage reports for MMA (Courtney + Chris Hart)',
+      'Load expanded V8 dataset (VA + Utah + Indiana + Chicago) into BigQuery \u2014 Courtney targeting Tuesday',
+      'Validate SQL generation accuracy with analysts (Bobby, Andy)',
+      'Greg input session \u2014 BH-specific semantic layer, interpretation concerns for providers',
+      'Rate book format as query response template \u2014 extract pipeline from Starset National',
+      'Lineage report integration \u2014 connect lineage tables for data tracing (Courtney + Chris Hart)',
+      'Cost benchmarking at 1M/5M/10M+ row levels for business model',
       'Cross-model evaluation (Vertex + Anthropic integration)',
     ],
     blockerStatus: 'clear',
-    blockerText: 'BigQuery transition resolved \u2014 major milestone. V8 available for download Monday. 5M-row expansion can proceed immediately.',
+    blockerText: 'V8 post-processing transfers in progress. Courtney targeting Tuesday for expanded dataset. Scale-up from 10M is trivial (~10 min).',
   },
   {
     id: 'feedback',
     title: 'SME Feedback & Domain Input',
     color: 'var(--p2)',
     rawColor: '#8b5cf6',
-    status: 'waiting',
-    statusLabel: 'WAITING',
+    status: 'ahead',
+    statusLabel: 'GREEN LIGHT',
     shipped: [
       { text: 'Outreach emails sent to all 7 SMEs', week: 6 },
       { text: 'Weekly Friday standup established', week: 6 },
       { text: 'Prototype presented in data services meeting \u2014 a few questions received', week: 8 },
       { text: 'Jira timeline/Gantt chart created with task dependencies and sprint view', week: 8 },
       { text: 'Cheryl invited to Friday standups (David directive \u2014 70% of substance will come from her)', week: 8 },
+      { text: 'Cheryl actively participating in Friday standup \u2014 first live prototype walkthrough', week: 9 },
+      { text: 'David gave explicit green light: schedule 30-min calls with each SME, Courtney on CC', week: 9 },
+      { text: 'Greg acquiesced on behavioral health \u2014 moving forward after one-on-one with David', week: 9 },
     ],
     next: [
-      'Share prototype link with SMEs \u2014 name-based login for usage tracking (replaces cold question solicitation)',
-      'Prioritize Cheryl engagement \u2014 schedule time, request question library (David: top of the list)',
-      'Greg + Andy for MHPI insight once post-processing wraps (~Tuesday/Wednesday)',
+      'Schedule 30-min calls with each data team member \u2014 direct outreach (David: green light)',
+      'Share prototype link with SMEs once V8 data loaded (~Tuesday) \u2014 with usage instructions',
+      'Capture Greg\u2019s BH-specific feedback on interpretation and code clustering concerns',
+      'Prioritize Cheryl engagement \u2014 request question library from her daily workflow',
+      'Greg + Andy for MHPI insight',
       'Scrape Greg\'s Slack questions',
-      'Top 25 question prioritization',
       'Blended P1.5: SMEs interact with prototype + grade responses concurrently',
     ],
-    blockerStatus: 'waiting',
-    blockerText: 'Data team in post-processing \u2014 Andy has family obligations, Bobby in New Orleans. Available ~Tuesday/Wednesday. Strategy shifted: send prototype for hands-on interaction instead of cold question requests.',
+    blockerStatus: 'clear',
+    blockerText: 'Major unlock: David gave green light for direct SME outreach. Wait for V8 data load (~Tuesday) before sending prototype link broadly.',
   },
   {
     id: 'business',
     title: 'Business & Legal',
     color: 'var(--p4)',
     rawColor: '#10b981',
-    status: 'waiting',
-    statusLabel: 'IN PROGRESS',
+    status: 'ahead',
+    statusLabel: 'ACCELERATING',
     shipped: [
       { text: 'Per-query cost visibility established in BigQuery job logs \u2014 direct link between questions and cost', week: 8 },
+      { text: 'Branding clarified: Odin = product (external), Muninn = project (internal only)', week: 9 },
+      { text: 'Behavioral health beta group concept \u2014 Cheryl + David aligned on ~15 BH providers at ~$2,500', week: 9 },
+      { text: 'David approved expanded data budget \u2014 \u201ctry not to go over $1,000\u201d for testing', week: 9 },
     ],
     next: [
-      'Cost benchmarking analysis (1M/5M/10M rows) \u2014 three data points now achievable with BigQuery job logs',
-      'Prove subscription billing on a live site by end of April (Clerk evaluation \u2014 3.6% + $0.30/transaction)',
-      'Data liability disclaimers \u2014 Bobby flagged discomfort with clients making business decisions from this data',
+      'Assemble BH beta invitation group \u2014 ~15 providers, heavily discounted pricing',
+      'BH messaging strategy \u2014 community oversensitive to AI, need careful positioning (Cheryl raised)',
+      'Cost benchmarking analysis (1M/5M/10M+ rows) \u2014 three data points achievable with BigQuery job logs',
+      'Prove subscription billing on a live site by end of April (Clerk evaluation)',
+      'Fractional CIO search \u2014 ensure infrastructure is in order before outside users (David directive)',
+      'Data liability disclaimers \u2014 Bobby + Greg flagged provider interpretation concerns',
       'Development cost pro forma (TH-959)',
       'Enterprise AI pricing model research (TH-966)',
-      'Define trackable billing metrics (TH-967)',
-      'Legal review of third-party terms (TH-969)',
+      'Payment infrastructure \u2014 NetSuite integration evaluation via Continuous Scale',
     ],
     blockerStatus: 'clear',
-    blockerText: 'No blockers. Cost visibility now live in BigQuery \u2014 enables real cost benchmarking as data scales. Clerk evaluation underway for billing infrastructure.',
+    blockerText: 'Behavioral health timeline accelerating. Greg on board. Beta group forming. Payment infrastructure being evaluated through Continuous Scale / NetSuite.',
   },
 ];
 
@@ -765,11 +819,25 @@ document.getElementById('countdownBar').innerHTML = `
 const grid = document.getElementById('workstreamGrid');
 
 lanes.forEach(lane => {
-  const shippedHTML = lane.shipped.length > 0
-    ? lane.shipped.map(s =>
-        `<li><span class="shipped-check">&#10003;</span><span>${ce(lane.id + '-shipped-' + lane.shipped.indexOf(s), s.text)}</span><span class="shipped-week">Wk ${s.week}</span></li>`
-      ).join('')
-    : '<li style="color:var(--text-muted);font-size:13px;padding:3px 0;">No items shipped yet</li>';
+  const recentShipped = lane.shipped.filter(s => s.week >= CURRENT_WEEK);
+  const archivedShipped = lane.shipped.filter(s => s.week < CURRENT_WEEK);
+
+  const makeShippedLi = (s) =>
+    `<li><span class="shipped-check">&#10003;</span><span>${ce(lane.id + '-shipped-' + lane.shipped.indexOf(s), s.text)}</span><span class="shipped-week">Wk ${s.week}</span></li>`;
+
+  let shippedBlock = '';
+  if (recentShipped.length > 0) {
+    shippedBlock += `<ul class="shipped-list">${recentShipped.map(makeShippedLi).join('')}</ul>`;
+  }
+  if (archivedShipped.length > 0) {
+    const minWk = Math.min(...archivedShipped.map(s => s.week));
+    const maxWk = Math.max(...archivedShipped.map(s => s.week));
+    const wkRange = minWk === maxWk ? `Week ${minWk}` : `Weeks ${minWk}\u2013${maxWk}`;
+    shippedBlock += `<details class="shipped-archive"><summary class="shipped-archive-toggle">${archivedShipped.length} archived items (${wkRange})</summary><ul class="shipped-list">${archivedShipped.map(makeShippedLi).join('')}</ul></details>`;
+  }
+  if (!shippedBlock) {
+    shippedBlock = '<ul class="shipped-list"><li style="color:var(--text-muted);font-size:13px;padding:3px 0;">No items shipped yet</li></ul>';
+  }
 
   const nextHTML = lane.next.map((n, i) =>
     `<li>${ce(lane.id + '-next-' + i, n)}</li>`
@@ -786,7 +854,7 @@ lanes.forEach(lane => {
           <span class="status-pill status-${lane.status}">${lane.statusLabel}</span>
         </div>
         <div class="lane-section-label">Shipped</div>
-        <ul class="shipped-list">${shippedHTML}</ul>
+        ${shippedBlock}
         <div class="lane-section-label">Next</div>
         <ul class="next-list">${nextHTML}</ul>
         <div class="blocker-section">
@@ -802,10 +870,11 @@ lanes.forEach(lane => {
 
 // --- Open Questions ---
 const questions = [
-  'Lineage report integration: David wants Vertex connected to lineage reports so MMA can query them through ODIN \u2014 what data is most valuable, and how complex is this connection? (Courtney + Chris Hart evaluating)',
-  'MMA site scope: David envisions it as a full relationship hub (contract, budget, baseball cards, Odin, lineage). How much to build now vs. phase in later?',
-  'Clerk vs Stripe: Is Clerk the right choice for auth + billing across TH projects? Need to evaluate pricing (3.6% + $0.30/txn), security, and integration complexity.',
-  'SQL accuracy validation: Gemini\u2019s SQL generation is now visible \u2014 should we have analysts formally verify query interpretations before sharing prototype more broadly?',
+  'Query logging: How to capture verbatim user questions (not just BigQuery SQL) without creating friction for SMEs? Critical for semantic layer development.',
+  'BH messaging: Behavioral health community is oversensitive to AI right now \u2014 how do we position Odin to avoid cultural pushback? (Cheryl raised)',
+  'Rate book pipeline: What\u2019s the exact extract-to-presentation process when a BH client buys a rate book from Starset National? That format should be Odin\u2019s default output. (Greg input needed)',
+  'Lineage tables: How complex is connecting Chris Hart\u2019s lineage reports to Odin? Courtney sees high internal value for tracing data questions daily.',
+  'Fractional CIO: David wants infrastructure in order before outside users try this \u2014 who do we bring in and when?',
 ];
 
 const questionsGrid = document.getElementById('questionsGrid');
@@ -820,10 +889,12 @@ questions.forEach((q, i) => {
 
 // --- Commitments ---
 const commitments = [
-  { label: 'Committed', text: 'MMA site behind login credentials (email/password) \u2014 Topher committed to show by Tuesday, David assigned explicitly' },
-  { label: 'Committed', text: 'Prototype link shared with SMEs (Cheryl first) with name-based usage tracking \u2014 strategy agreed in meeting' },
-  { label: 'Committed', text: '5M-row V8 dataset loaded into BigQuery (V8 posted, pull Monday) \u2014 David confirmed V8 is ready' },
-  { label: 'Stretch', text: 'Clerk evaluation started \u2014 auth + billing proof of concept (David: prove subscription billing by end of April)' },
+  { label: 'Committed', text: 'Preliminary cost dashboard \u2014 per-query cost visibility UI ready for review (Topher committed in meeting)' },
+  { label: 'Committed', text: 'V8 data loaded into BigQuery: VA + Utah + Indiana + Chicago MSA (~10M rows) \u2014 Courtney targeting Tuesday' },
+  { label: 'Committed', text: 'SME outreach started \u2014 30-min calls scheduled with data team members, Courtney on CC (David: green light)' },
+  { label: 'Committed', text: 'Query logging solution \u2014 capture verbatim user questions for semantic layer development' },
+  { label: 'Committed', text: 'UI updated: \u201cChat with Odin\u201d branding (not Muninn) \u2014 per Cheryl\u2019s naming clarification' },
+  { label: 'Stretch', text: 'BH rate book repo forked from David\u2019s GitHub and integrated into prototype (pending Spencer Case)' },
 ];
 
 const commitmentContainer = document.getElementById('commitmentOptions');
@@ -862,8 +933,9 @@ function selectCommitment(index) {
 
 // --- Past Commitments ---
 const pastCommitments = [
+  { week: 9, date: 'Mar 27', text: 'Wk 8 review: MMA login not yet delivered. Cheryl engaged with prototype (walkthrough completed). V8 data transfers in progress, not yet loaded. Clerk eval not started. New this week: data scope widened to 4 states / 10M+, BH beta group concept, Greg on board, SME outreach green light, branding clarified.', status: 'partial' },
   { week: 8, date: 'Mar 20', text: 'BigQuery MCP transition complete \u2014 queries now run against real BigQuery with cost visibility and SQL transparency. V8 posted. Prototype presented in data services meeting. Jira timeline created. SME strategy shifted to prototype-first with name tracking.', status: 'met' },
-  { week: 7, date: 'Mar 13', text: 'True by Friday: (1) Dev environment with larger tables (5M V8, IL + VA) available for testing \u2014 V8 now posted, load pending Monday. (2) Begin rounding up data team \u2014 Courtney brought up in data services meeting, Cheryl invited. Cost benchmarking stretch: now achievable via BigQuery job logs.', status: 'partial' },
+  { week: 7, date: 'Mar 13', text: 'True by Friday: (1) Dev environment with larger tables (5M V8, IL + VA) available for testing \u2014 V8 now posted, load pending. (2) Begin rounding up data team \u2014 Courtney brought up in data services meeting, Cheryl invited. Cost benchmarking stretch: now achievable via BigQuery job logs.', status: 'partial' },
   { week: 6, date: 'Mar 13', text: 'CEO live demo of prototype completed, data expansion plan agreed, rate book use case surfaced (meeting outcomes, not pre-set commitments)', status: 'met' },
   { week: 5, date: 'Mar 7', text: 'SME outreach sent, Friday standup cadence established, Gemini transition complete', status: 'met' },
 ];
