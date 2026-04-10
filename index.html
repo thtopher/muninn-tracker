@@ -665,21 +665,28 @@ const lanes = [
       { text: 'Authenticated chat proxy', week: 6 },
       { text: 'Chat UX polished for demo', week: 6 },
       { text: 'Gemini 2.5-flash transition', week: 6 },
+      { text: 'Dev/prod environment separation \u2014 two Vercel URLs', week: 10 },
+      { text: 'Admin dashboard live on production with query logging + latency', week: 10 },
+      { text: 'Inline charts and tables in chat responses', week: 10 },
+      { text: 'Verbatim query logging captured in admin dashboard', week: 10 },
+      { text: 'All branding updated to \u201cOdin\u201d \u2014 no more Muninn references', week: 10 },
     ],
     next: [
-      'Change UI branding from \u201cChat with Muninn\u201d to \u201cChat with Odin\u201d',
-      'Build preliminary cost dashboard \u2014 per-query cost visibility UI',
-      'Wire up query logging \u2014 capture verbatim user questions (not just SQL)',
+      'Default charts to bar only \u2014 remove scatter/line options',
+      'Fix chart scroll \u2014 fixed dimensions with internal content scrolling',
+      'Fix blue gradient artifacts in chat UI',
+      'Add thinking/loading indicator \u2014 shimmer or processing steps during query execution',
+      'Add thumbs up/down inline feedback UI for query responses',
+      'UI cosmetic updates \u2014 navy/gold Third Horizon branding, updated logo (David confirmed)',
       'Fork BH rate book repo from David\u2019s GitHub, take off fly.io (Spencer Case)',
       'Add login credentials to MMA site (email/password, like ForeSee)',
-      'Evaluate Clerk for auth + billing across TH projects (prove subscription billing by end of April)',
       'Wire MMA site as relationship hub \u2014 contract, budget, baseball cards, Odin (David vision)',
       'Migrate to Google Cloud-hosted application (production)',
       'Per-client GCP project isolation',
       'Transition Railway account from Sean\u2019s trial to TH',
     ],
     blockerStatus: 'clear',
-    blockerText: 'No blockers. Cost dashboard and query logging are new commitments. BH rate book fork pending Spencer Case.',
+    blockerText: 'Cost-per-query needs service account wiring (Courtney). Chart fixes are quick wins from Apr 8 team feedback.',
   },
   {
     id: 'semantic',
@@ -701,18 +708,27 @@ const lanes = [
       { text: 'V8 dataset posted and available for download', week: 8 },
       { text: 'Cheryl\u2019s first live prototype walkthrough \u2014 tested queries, confirmed sample limitations', week: 9 },
       { text: 'Data expansion scope widened: VA + Utah + Indiana + Chicago MSA \u2014 David approved 10M+ start', week: 9 },
+      { text: 'Utah (8M rows) + Chicago (2M rows) loaded into BigQuery', week: 10 },
+      { text: 'V8 semantic layer updates finalized and deployed to production', week: 10 },
+      { text: 'First broader data team walkthrough \u2014 Ashley, Chris, Bobby tested queries live', week: 11 },
+      { text: 'Agent correctly references sample data limitations when codes return no results', week: 11 },
+      { text: 'Vertex AI per-interaction cost audit tracking activated', week: 11 },
+      { text: 'David green-lit 700M-row scale-up \u2014 \u201cI want to know where our limits are\u201d', week: 11 },
     ],
     next: [
-      'Load expanded V8 dataset (VA + Utah + Indiana + Chicago) into BigQuery \u2014 Courtney targeting Tuesday',
-      'Validate SQL generation accuracy with analysts (Bobby, Andy)',
+      'Scale-up to 700M rows (full Utah) \u2014 David green light, test in dev environment',
+      'Region-based table partitioning \u2014 9 census geographic regions, user selects region first (Courtney proposal)',
+      'Indiana rates incorporation \u2014 next data rollout',
+      'Condense Confluence methodology docs for agent context (outpatient taxonomy filter, etc.)',
+      'Validate SQL generation accuracy with analysts (Bobby, Andy) \u2014 session Apr 20',
       'Greg input session \u2014 BH-specific semantic layer, interpretation concerns for providers',
+      'Limitation awareness prompting \u2014 agent offers to explain search parameters per result',
       'Rate book format as query response template \u2014 extract pipeline from Starset National',
       'Lineage report integration \u2014 connect lineage tables for data tracing (Courtney + Chris Hart)',
-      'Cost benchmarking at 1M/5M/10M+ row levels for business model',
       'Cross-model evaluation (Vertex + Anthropic integration)',
     ],
     blockerStatus: 'clear',
-    blockerText: 'V8 post-processing transfers in progress. Courtney targeting Tuesday for expanded dataset. Scale-up from 10M is trivial (~10 min).',
+    blockerText: 'David green-lit 700M scale-up. Courtney wants to be methodical about partitioning before scaling. Bobby/Andy session Apr 20 for data validation. V9 method sprint starts Apr 20; next Odin data mapping mid-June.',
   },
   {
     id: 'feedback',
@@ -730,10 +746,13 @@ const lanes = [
       { text: 'Cheryl actively participating in Friday standup \u2014 first live prototype walkthrough', week: 9 },
       { text: 'David gave explicit green light: schedule 30-min calls with each SME, Courtney on CC', week: 9 },
       { text: 'Greg acquiesced on behavioral health \u2014 moving forward after one-on-one with David', week: 9 },
+      { text: 'Data team walkthrough completed \u2014 Ashley, Chris, Bobby tested live queries with feedback', week: 11 },
+      { text: 'Consensus decisions captured: bar charts default, keep confidence 2\u20133 filtering', week: 11 },
+      { text: 'Guided onboarding concept well-received \u2014 Chris proposed 5-question intake flow', week: 11 },
     ],
     next: [
-      'Schedule 30-min calls with each data team member \u2014 direct outreach (David: green light)',
-      'Share prototype link with SMEs once V8 data loaded (~Tuesday) \u2014 with usage instructions',
+      'Schedule Bobby + Andy session \u2014 deeper data interpretation feedback (Andy out this week)',
+      'Schedule Greg + non-market team session \u2014 UI/application feedback',
       'Capture Greg\u2019s BH-specific feedback on interpretation and code clustering concerns',
       'Prioritize Cheryl engagement \u2014 request question library from her daily workflow',
       'Greg + Andy for MHPI insight',
@@ -741,7 +760,7 @@ const lanes = [
       'Blended P1.5: SMEs interact with prototype + grade responses concurrently',
     ],
     blockerStatus: 'clear',
-    blockerText: 'Major unlock: David gave green light for direct SME outreach. Wait for V8 data load (~Tuesday) before sending prototype link broadly.',
+    blockerText: 'Team walkthrough done. Bobby/Andy and Greg/non-market sessions are the next engagement milestones.',
   },
   {
     id: 'business',
@@ -755,12 +774,19 @@ const lanes = [
       { text: 'Branding clarified: Odin = product (external), Muninn = project (internal only)', week: 9 },
       { text: 'Behavioral health beta group concept \u2014 Cheryl + David aligned on ~15 BH providers at ~$2,500', week: 9 },
       { text: 'David approved expanded data budget \u2014 \u201ctry not to go over $1,000\u201d for testing', week: 9 },
+      { text: 'Dev/prod URLs established for controlled external sharing', week: 10 },
+      { text: 'Client Readiness SOP initiated \u2014 building on DaaS Confluence docs + Jira templates', week: 11 },
+      { text: 'First real cost data point: ~$3/query at 700M rows (0.5 TB) unpartitioned', week: 11 },
+      { text: 'David: holding further HFMA dashboard investment once Odin is working', week: 11 },
     ],
     next: [
+      'End-game architecture mapping (Apr 17) \u2014 David on screen, full ecosystem design',
+      'Cost forecast model \u2014 Courtney presenting Vertex AI + BigQuery projections at scale',
+      'Client Readiness SOP \u2014 onboarding process for Odin (deployment, auth, data segmentation)',
+      'Query size constraint policy \u2014 define limits before broad external access',
       'Assemble BH beta invitation group \u2014 ~15 providers, heavily discounted pricing',
       'BH messaging strategy \u2014 community oversensitive to AI, need careful positioning (Cheryl raised)',
       'Cost benchmarking analysis (1M/5M/10M+ rows) \u2014 three data points achievable with BigQuery job logs',
-      'Prove subscription billing on a live site by end of April (Clerk evaluation)',
       'Fractional CIO search \u2014 ensure infrastructure is in order before outside users (David directive)',
       'Data liability disclaimers \u2014 Bobby + Greg flagged provider interpretation concerns',
       'Development cost pro forma (TH-959)',
@@ -768,7 +794,7 @@ const lanes = [
       'Payment infrastructure \u2014 NetSuite integration evaluation via Continuous Scale',
     ],
     blockerStatus: 'clear',
-    blockerText: 'Behavioral health timeline accelerating. Greg on board. Beta group forming. Payment infrastructure being evaluated through Continuous Scale / NetSuite.',
+    blockerText: 'Client readiness SOP in progress. Query size constraints needed before broad external access. BH beta group forming.',
   },
 ];
 
@@ -870,11 +896,11 @@ lanes.forEach(lane => {
 
 // --- Open Questions ---
 const questions = [
-  'Query logging: How to capture verbatim user questions (not just BigQuery SQL) without creating friction for SMEs? Critical for semantic layer development.',
-  'BH messaging: Behavioral health community is oversensitive to AI right now \u2014 how do we position Odin to avoid cultural pushback? (Cheryl raised)',
-  'Rate book pipeline: What\u2019s the exact extract-to-presentation process when a BH client buys a rate book from Starset National? That format should be Odin\u2019s default output. (Greg input needed)',
-  'Lineage tables: How complex is connecting Chris Hart\u2019s lineage reports to Odin? Courtney sees high internal value for tracing data questions daily.',
-  'Fractional CIO: David wants infrastructure in order before outside users try this \u2014 who do we bring in and when?',
+  'End-game architecture (Apr 17): David will be on screen to map the full ecosystem \u2014 table structure at scale, query traversal across partitions, cost estimates per configuration. Come prepared.',
+  'Data partitioning strategy: Courtney proposes splitting by 9 census geographic regions. Users select a region first, Odin queries only that table. Bobby/Andy input needed on whether region or network split is more useful.',
+  'Scale-up cost model: Utah alone = 700M rows (~0.5 TB) = ~$3/query unpartitioned. Vertex AI token costs still being audited (tracking on since Apr 8). What\u2019s the per-query cost target for a viable product?',
+  'Guided onboarding: Should Odin prompt new users with setup questions (region, provider class, plan type) before querying? Chris referenced success with Age of May. Reduces unbounded first queries.',
+  'Client Readiness SOP: What Odin-specific steps (deployment, auth, data segmentation) layer onto the existing DaaS onboarding? Building on Tanner\u2019s Confluence/Jira templates.',
 ];
 
 const questionsGrid = document.getElementById('questionsGrid');
@@ -889,12 +915,12 @@ questions.forEach((q, i) => {
 
 // --- Commitments ---
 const commitments = [
-  { label: 'Committed', text: 'Preliminary cost dashboard \u2014 per-query cost visibility UI ready for review (Topher committed in meeting)' },
-  { label: 'Committed', text: 'V8 data loaded into BigQuery: VA + Utah + Indiana + Chicago MSA (~10M rows) \u2014 Courtney targeting Tuesday' },
-  { label: 'Committed', text: 'SME outreach started \u2014 30-min calls scheduled with data team members, Courtney on CC (David: green light)' },
-  { label: 'Committed', text: 'Query logging solution \u2014 capture verbatim user questions for semantic layer development' },
-  { label: 'Committed', text: 'UI updated: \u201cChat with Odin\u201d branding (not Muninn) \u2014 per Cheryl\u2019s naming clarification' },
-  { label: 'Stretch', text: 'BH rate book repo forked from David\u2019s GitHub and integrated into prototype (pending Spencer Case)' },
+  { label: 'Committed', text: 'End-game architecture prep \u2014 come prepared to map full ecosystem with David on screen (Apr 17)' },
+  { label: 'Committed', text: 'Scale-up testing \u2014 load 700M-row Utah table in dev, run test queries, document cost + latency' },
+  { label: 'Committed', text: 'Courtney: Vertex AI cost forecast model \u2014 per-interaction data from Apr 8, present projections at scale' },
+  { label: 'Committed', text: 'Bar chart default + chart scroll fix + thinking/loading indicator (UI batch)' },
+  { label: 'Committed', text: 'UI cosmetic updates \u2014 navy/gold Third Horizon branding, updated logo' },
+  { label: 'Stretch', text: 'Thumbs up/down inline feedback UI for query responses' },
 ];
 
 const commitmentContainer = document.getElementById('commitmentOptions');
@@ -933,7 +959,8 @@ function selectCommitment(index) {
 
 // --- Past Commitments ---
 const pastCommitments = [
-  { week: 9, date: 'Mar 27', text: 'Wk 8 review: MMA login not yet delivered. Cheryl engaged with prototype (walkthrough completed). V8 data transfers in progress, not yet loaded. Clerk eval not started. New this week: data scope widened to 4 states / 10M+, BH beta group concept, Greg on board, SME outreach green light, branding clarified.', status: 'partial' },
+  { week: 11, date: 'Apr 10', text: 'Wk 10\u201311: Admin dashboard live with query logging + latency. Utah (8M) + Chicago (2M) loaded. Dev/prod split shipped. Branding done. Verbatim queries captured. Data team walkthrough completed Apr 8 \u2014 bar charts, confidence 2\u20133 filtering, onboarding flow discussed. Async email covered Wk 10 (no Friday call).', status: 'met' },
+  { week: 9, date: 'Mar 27', text: 'Wk 8 review: MMA login not yet delivered. Cheryl engaged with prototype (walkthrough completed). V8 data transfers in progress, not yet loaded. New this week: data scope widened to 4 states / 10M+, BH beta group concept, Greg on board, SME outreach green light, branding clarified.', status: 'partial' },
   { week: 8, date: 'Mar 20', text: 'BigQuery MCP transition complete \u2014 queries now run against real BigQuery with cost visibility and SQL transparency. V8 posted. Prototype presented in data services meeting. Jira timeline created. SME strategy shifted to prototype-first with name tracking.', status: 'met' },
   { week: 7, date: 'Mar 13', text: 'True by Friday: (1) Dev environment with larger tables (5M V8, IL + VA) available for testing \u2014 V8 now posted, load pending. (2) Begin rounding up data team \u2014 Courtney brought up in data services meeting, Cheryl invited. Cost benchmarking stretch: now achievable via BigQuery job logs.', status: 'partial' },
   { week: 6, date: 'Mar 13', text: 'CEO live demo of prototype completed, data expansion plan agreed, rate book use case surfaced (meeting outcomes, not pre-set commitments)', status: 'met' },
